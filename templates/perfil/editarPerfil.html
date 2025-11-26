@@ -1,0 +1,75 @@
+{% extends "Principal/base.html" %} 
+{% load static %} 
+{% block content %}
+<div class="card">
+  <div class="card-body p-4">
+    <div class="text-center">
+      <h1 class="display-4 fw-bold">
+        Hola, bienvenido {{ user.username }}!
+      </h1>
+      <p class="lead text-secondary">
+        Este es tu perfil. Aquí puedes ver tus datos y modificar.
+      </p>
+    </div>
+
+    <hr />
+
+    <!-- FORMULARIO DE PERFIL -->
+    <div class="mt-4">
+      <h4>Información de tu perfil</h4>
+      <form method="post" class="text-start">
+        {% csrf_token %} 
+        {{ user_form.as_p }} 
+        {{ perfil_form.as_p }}
+        <button type="submit" name="guardar_perfil" class="btn btn-primary mt-2">
+          Guardar perfil
+        </button>
+      </form>
+    </div>
+
+    <hr />
+
+    <!-- LISTA DE DIRECCIONES -->
+    <div class="mt-4">
+      <h4>Direcciones de facturación</h4>
+      <ul class="list-group">
+        {% for direccion in direcciones %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          {{ direccion }}
+          <span>
+            <a href="{% url 'editar_direccion' direccion.id %}" class="btn btn-sm btn-warning">Editar</a>
+            <a href="{% url 'eliminar_direccion' direccion.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+          </span>
+        </li>
+        {% empty %}
+        <li class="list-group-item text-muted">
+          No tienes direcciones agregadas.
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <hr />
+
+    <!-- FORMULARIO PARA NUEVA DIRECCION -->
+    <div class="mt-4">
+      <h4>Agregar nueva dirección</h4>
+      <form method="post" class="text-start">
+        {% csrf_token %} 
+        {{ direccion_form.as_p }}
+        <button type="submit" name="agregar_direccion" class="btn btn-success mt-2">
+          Agregar dirección
+        </button>
+      </form>
+    </div>
+
+    <!-- CERRAR SESIÓN -->
+    <form action="/perfil/" class="text-center mt-5">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-secondary">
+        Cancelar
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock content %}

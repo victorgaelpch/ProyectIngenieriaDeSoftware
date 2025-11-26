@@ -1,0 +1,247 @@
+{% extends "Principal/base.html" %}
+{% block content %}
+<div class="container-fluid py-4">
+  <h2 class="mb-4 text-center">Pedido Kiosko</h2>
+  <form method="post" id="kiosko-form">
+    {% csrf_token %}
+    <div class="row">
+      <!-- Productos -->
+      <div class="col-lg-8">
+        <div class="mb-3">
+          <label class="form-label">Sucursal</label>
+          <select name="sucursal" class="form-control" required>
+            <option value="">Selecciona una sucursal</option>
+            {% for sucursal in sucursales %}
+              <option value="{{ sucursal.id }}">{{ sucursal }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Nombre (opcional)</label>
+          <input type="text" name="nombre" class="form-control">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Teléfono (opcional)</label>
+          <input type="tel" name="telefono" class="form-control">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Filtrar por tipo:</label>
+          <select id="filtro-tipo" class="form-control w-auto d-inline-block ms-2">
+            <option value="todos">Todos</option>
+            {% for tipo in tipos %}
+              <option value="{{ tipo }}">{{ tipo }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="row" id="productos-mosaico">
+          {% for producto in productos %}
+          <div class="col-md-4 mb-4 producto-card" data-tipo="{{ producto.tipo }}">
+            <div class="card h-100 shadow-sm">
+              <img src="{{ MEDIA_URL }}{{ producto.imagen }}" class="card-img-top" alt="{{ producto.nombre_producto }}" style="height: 160px; object-fit: cover;">
+              <div class="card-body text-center">
+                <h5 class="card-title">{{ producto.nombre_producto }}</h5>
+                <p class="card-text text-secondary mb-2">{{ producto.descripcion|truncatechars:60 }}</p>
+                <span class="badge badge-primary mb-2">${{ producto.precio }}</span>
+                <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+                  <button type="button" class="btn btn-outline-primary btn-sm agregar-btn"
+                    data-id="{{ producto.id }}"
+                    data-nombre="{{ producto.nombre_producto }}"
+                    data-precio="{{ producto.precio }}"
+                    data-tipo="{{ producto.tipo }}">
+                    <i class="bi bi-plus-circle"></i> Agregar
+                  </button>
+                  <button type="button" class="btn btn-outline-danger btn-sm quitar-btn d-none"
+                    data-id="{{ producto.id }}">
+                    <i class="bi bi-dash-circle"></i> Quitar
+                  </button>
+                  <span class="badge badge-secondary cantidad-badge d-none" data-id="{{ producto.id }}">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <!-- Carrito lateral -->
+      <div class="col-lg-4">
+        <div class="sticky-top" style="top: 90px;">
+          <div class="card shadow-lg mb-3">
+            <div class="card-header bg-dark text-white">
+              <h5 class="mb-0"><i class="bi bi-cart"></i> Carrito</h5>
+            </div>
+            <div class="card-body p-2">
+              <table class="table table-sm table-bordered align-middle mb-0" id="carrito-tabla" style="font-size: 0.98rem;">
+                <thead class="table-light">
+                  <tr>
+                    <th>Producto</th>
+                    <th>Cant.</th>
+                    <th>Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Aquí se llenará dinámicamente -->
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th colspan="2" class="text-end">Total:</th>
+                    <th id="carrito-total">$0.00</th>
+                  </tr>
+                </tfoot>
+              </table>
+              {% if user.is_authenticated and user.perfil %}
+              <div class="alert alert-info mt-2 mb-0">
+                Ganarás <span id="puntos-ganar">0</span> puntos con este pedido.
+              </div>
+              <div class="alert alert-success mt-2 mb-0" id="total-con-puntos" style="display:none;">
+                Total a pagar usando puntos: $<span id="total-final"></span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          {% if user.is_authenticated and user.perfil %}
+          <div class="card mb-3">
+            <div class="card-body">
+              <label class="form-label">¿Cuántos puntos deseas usar? (Tienes {{ user.perfil.puntos }} puntos)</label>
+              <input type="number" name="puntos_a_usar" id="puntos-a-usar" class="form-control" min="0" max="{{ user.perfil.puntos }}" value="0" oninput="actualizarCarritoVisual()">
+              <div class="form-text">
+                1 punto = $0.50 de descuento en tu pedido.
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          <input type="hidden" name="carrito_json" id="carrito-json">
+          <button type="submit" class="btn btn-success w-100 mt-2">Finalizar pedido</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Filtro por tipo/categoría
+  document.getElementById('filtro-tipo').addEventListener('change', function() {
+    let tipo = this.value;
+    document.querySelectorAll('.producto-card').forEach(function(card) {
+      if (tipo === 'todos' || card.dataset.tipo === tipo) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
+
+  // Carrito en memoria
+  let carrito = {};
+
+  // Agregar producto
+  document.querySelectorAll('.agregar-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      let id = btn.dataset.id;
+      let nombre = btn.dataset.nombre;
+      let precio = parseFloat(btn.dataset.precio);
+      if (!carrito[id]) {
+        carrito[id] = { nombre: nombre, precio: precio, cantidad: 1 };
+      } else {
+        carrito[id].cantidad += 1;
+      }
+      actualizarCarritoVisual();
+      actualizarBotones(id);
+    });
+  });
+
+  // Quitar producto
+  document.querySelectorAll('.quitar-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      let id = btn.dataset.id;
+      if (carrito[id]) {
+        carrito[id].cantidad -= 1;
+        if (carrito[id].cantidad <= 0) {
+          delete carrito[id];
+        }
+        actualizarCarritoVisual();
+        actualizarBotones(id);
+      }
+    });
+  });
+
+  function actualizarBotones(id) {
+    let cantidad = carrito[id] ? carrito[id].cantidad : 0;
+    let badge = document.querySelector('.cantidad-badge[data-id="' + id + '"]');
+    let quitarBtn = document.querySelector('.quitar-btn[data-id="' + id + '"]');
+    if (cantidad > 0) {
+      badge.textContent = cantidad;
+      badge.classList.remove('d-none');
+      quitarBtn.classList.remove('d-none');
+    } else {
+      badge.classList.add('d-none');
+      quitarBtn.classList.add('d-none');
+    }
+  }
+
+  function actualizarCarritoVisual() {
+    let total = 0;
+    let tbody = document.querySelector('#carrito-tabla tbody');
+    tbody.innerHTML = '';
+    Object.keys(carrito).forEach(function(id) {
+      let item = carrito[id];
+      let subtotal = item.precio * item.cantidad;
+      total += subtotal;
+      let tr = document.createElement('tr');
+      tr.innerHTML = `<td>${item.nombre}</td><td>${item.cantidad}</td><td>$${subtotal.toFixed(2)}</td>`;
+      tbody.appendChild(tr);
+      actualizarBotones(id);
+    });
+    document.getElementById('carrito-total').textContent = '$' + total.toFixed(2);
+
+    {% if user.is_authenticated and user.perfil %}
+    // Puntos
+    let puntosPorMonto = Math.floor(total / 30) * 5;
+    document.getElementById('puntos-ganar').textContent = puntosPorMonto;
+
+    // Total con puntos (si aplica)
+    let puntosInput = document.getElementById('puntos-a-usar');
+    if (puntosInput) {
+      let puntosUsar = parseInt(puntosInput.value) || 0;
+      let maxPuntos = parseInt(puntosInput.max) || 0;
+      if (puntosUsar > maxPuntos) puntosUsar = maxPuntos;
+      if (puntosUsar * 0.50 > total) puntosUsar = Math.floor(total / 0.50);
+      puntosInput.value = puntosUsar;
+      let totalFinal = total - (puntosUsar * 0.50);
+      let totalConPuntos = document.getElementById('total-con-puntos');
+      let totalFinalSpan = document.getElementById('total-final');
+      if (totalConPuntos && totalFinalSpan) {
+        totalConPuntos.style.display = 'block';
+        totalFinalSpan.textContent = totalFinal.toFixed(2);
+      }
+    }
+    {% endif %}
+  }
+
+  {% if user.is_authenticated and user.perfil %}
+  if (document.getElementById('puntos-a-usar')) {
+    document.getElementById('puntos-a-usar').addEventListener('input', actualizarCarritoVisual);
+  }
+  {% endif %}
+  document.addEventListener('DOMContentLoaded', actualizarCarritoVisual);
+
+  // Guardar carrito en hidden antes de enviar
+  document.getElementById('kiosko-form').addEventListener('submit', function(e) {
+    let carritoArr = [];
+    Object.keys(carrito).forEach(function(id) {
+      let item = carrito[id];
+      carritoArr.push({
+        id: id,
+        nombre: item.nombre,
+        precio: item.precio,
+        cantidad: item.cantidad
+      });
+    });
+    document.getElementById('carrito-json').value = JSON.stringify(carritoArr);
+  });
+</script>
+<style>
+  @media (max-width: 991px) {
+    .sticky-top { position: static !important; }
+  }
+</style>
+{% endblock %}

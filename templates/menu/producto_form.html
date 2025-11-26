@@ -1,0 +1,249 @@
+{% extends 'Principal/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    {% if not es_gerente %}
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle"></i> No tienes permiso para acceder a esta página.
+        </div>
+    {% else %}
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">
+                    <i class="fas fa-plus-circle"></i> 
+                    {% if form.instance.pk %}Editar{% else %}Nuevo{% endif %} Producto
+                </h3>
+                <div>
+                    <button type="button" class="btn btn-success" onclick="document.getElementById('productForm').submit();">
+                        <i class="fas fa-save"></i> 
+                        {% if form.instance.pk %}Actualizar{% else %}Agregar{% endif %} Producto
+                    </button>
+                    <a href="{% url 'menu:producto_list' %}" class="btn btn-light">
+                        <i class="fas fa-list"></i> Ver Lista
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+                
+                <form method="post" enctype="multipart/form-data" id="productForm">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.nombre.label_tag }}
+                                {{ form.nombre }}
+                                {% if form.nombre.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.nombre.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                {{ form.descripcion.label_tag }}
+                                {{ form.descripcion }}
+                                {% if form.descripcion.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.descripcion.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                {{ form.precio.label_tag }}
+                                {{ form.precio }}
+                                {% if form.precio.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.precio.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                {{ form.categoria_id.label_tag }}
+                                {{ form.categoria_id }}
+                                {% if form.categoria_id.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.categoria_id.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                {{ form.subcategoria_id.label_tag }}
+                                {{ form.subcategoria_id }}
+                                {% if form.subcategoria_id.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.subcategoria_id.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                {{ form.imagen.label_tag }}
+                                {{ form.imagen }}
+                                {% if form.imagen.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.imagen.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        {{ form.stock.label_tag }}
+                                        {{ form.stock }}
+                                        {% if form.stock.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.stock.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <div class="form-check">
+                                            {{ form.puntos_extra }}
+                                            {{ form.puntos_extra.label_tag }}
+                                        </div>
+                                        {% if form.puntos_extra.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.puntos_exta.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <div class="form-check">
+                                            {{ form.activo }}
+                                            {{ form.activo.label_tag }}
+                                        </div>
+                                        {% if form.activo.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.activo.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="atributos-dinamicos" class="mt-4">
+                        <!-- Los atributos se cargarán dinámicamente -->
+                        {% if form.instance.pk and form.instance.atributos %}
+                            <h4 class="mb-3">Atributos específicos</h4>
+                            <div id="atributos-existentes">
+                                {% for key, value in form.instance.atributos.items %}
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">Atributo {{ key }}</label>
+                                        <input type="text" name="atributo_{{ key }}" class="form-control" value="{{ value }}">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mt-4 border-top pt-3">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Guardar
+                            </button>
+                            {% if not form.instance.pk %}
+                                <button type="submit" name="action" value="save_and_add" class="btn btn-success">
+                                    <i class="fas fa-plus"></i> Guardar y Agregar Otro
+                                </button>
+                            {% endif %}
+                            <button type="reset" class="btn btn-warning">
+                                <i class="fas fa-undo"></i> Restablecer
+                            </button>
+                            <a href="{% url 'menu:producto_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const categoriaSelect = document.getElementById('id_categoria_id');
+    const subcategoriaSelect = document.getElementById('id_subcategoria_id');
+    const atributosContainer = document.getElementById('atributos-dinamicos');
+
+    // Función para cargar subcategorías
+    function cargarSubcategorias(categoriaId) {
+        if (!categoriaId) {
+            subcategoriaSelect.innerHTML = '<option value="">Selecciona una subcategoría (opcional)</option>';
+            return;
+        }
+
+        // Aquí podrías hacer una llamada AJAX para cargar subcategorías filtradas por categoría
+        // Por simplicidad, mantengo todas las subcategorías por ahora
+    }
+
+    // Función para cargar atributos
+    function cargarAtributos(categoriaId) {
+        if (!categoriaId) {
+            atributosContainer.innerHTML = '';
+            return;
+        }
+
+        fetch(`/administracion/api/categorias/${categoriaId}/atributos/`)
+            .then(response => response.json())
+            .then(data => {
+                let atributosHTML = '<h4 class="mb-3">Atributos específicos</h4>';
+                data.atributos.forEach(atributo => {
+                    const valorExistente = document.querySelector(`input[name="atributo_${atributo.id}"]`)?.value || '';
+                    atributosHTML += `
+                        <div class="form-group mb-3">
+                            <label class="form-label">${atributo.nombre}${atributo.requerido ? ' *' : ''}</label>
+                            <input type="text" 
+                                   name="atributo_${atributo.id}" 
+                                   class="form-control" 
+                                   value="${valorExistente}"
+                                   ${atributo.requerido ? 'required' : ''}>
+                        </div>
+                    `;
+                });
+                atributosContainer.innerHTML = atributosHTML;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                atributosContainer.innerHTML = `
+                    <div class="alert alert-warning">
+                        No se pudieron cargar los atributos para esta categoría
+                    </div>
+                `;
+            });
+    }
+
+    // Event listeners
+    categoriaSelect.addEventListener('change', function() {
+        const categoriaId = this.value;
+        cargarSubcategorias(categoriaId);
+        cargarAtributos(categoriaId);
+    });
+
+    // Cargar atributos si ya hay una categoría seleccionada (modo edición)
+    if (categoriaSelect.value) {
+        cargarAtributos(categoriaSelect.value);
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,586 @@
+```html
+{% extends 'Principal/base.html' %}
+
+{% block title %}Personalización de Temas{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h1><i class="fas fa-palette"></i> Personalización de Temas</h1>
+            <p class="mb-0">Personaliza la apariencia del sistema según tus preferencias</p>
+        </div>
+        
+        <div class="card-body">
+            <!-- Temas Predefinidos -->
+            <div class="mb-5">
+                <h3 class="mb-3"><i class="fas fa-swatchbook"></i> Temas Predefinidos</h3>
+                <div class="preset-themes-grid">
+                    <!-- Aquí se crearán los temas predefinidos -->
+                </div>
+            </div>
+            
+            <!-- Personalización Avanzada -->
+            <div class="mb-5">
+                <h3 class="mb-3"><i class="fas fa-sliders-h"></i> Personalización Avanzada</h3>
+                
+                <div class="row">
+                    <!-- Colores Primarios -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-paint-brush"></i> Color Primario
+                            </label>
+                            <div class="d-flex gap-2 align-items-center">
+                                <input type="color" id="primaryColor" class="form-control" style="height: 50px;">
+                                <input type="text" id="primaryColorHex" class="form-control" placeholder="#667eea">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-paint-brush"></i> Color Primario Oscuro
+                            </label>
+                            <div class="d-flex gap-2 align-items-center">
+                                <input type="color" id="primaryDark" class="form-control" style="height: 50px;">
+                                <input type="text" id="primaryDarkHex" class="form-control" placeholder="#764ba2">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-paint-brush"></i> Color Primario Claro
+                            </label>
+                            <div class="d-flex gap-2 align-items-center">
+                                <input type="color" id="primaryLight" class="form-control" style="height: 50px;">
+                                <input type="text" id="primaryLightHex" class="form-control" placeholder="#a8b9ff">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Colores Secundarios -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-check-circle"></i> Color Secundario
+                            </label>
+                            <div class="d-flex gap-2 align-items-center">
+                                <input type="color" id="secondaryColor" class="form-control" style="height: 50px;">
+                                <input type="text" id="secondaryColorHex" class="form-control" placeholder="#48bb78">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-check-circle"></i> Color Secundario Oscuro
+                            </label>
+                            <div class="d-flex gap-2 align-items-center">
+                                <input type="color" id="secondaryDark" class="form-control" style="height: 50px;">
+                                <input type="text" id="secondaryDarkHex" class="form-control" placeholder="#38a169">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-check-circle"></i> Color Secundario Claro
+                            </label>
+                            <div class="d-flex gap-2 align-items-center">
+                                <input type="color" id="secondaryLight" class="form-control" style="height: 50px;">
+                                <input type="text" id="secondaryLightHex" class="form-control" placeholder="#9ae6b4">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Colores de Estado -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-check-circle"></i> Color Éxito
+                            </label>
+                            <div class="d-flex gap-2 align-items-center">
+                                <input type="color" id="successColor" class="form-control" style="height: 50px;">
+                                <input type="text" id="successColorHex" class="form-control" placeholder="#48bb78">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-exclamation-triangle"></i> Color Advertencia
+                            </label>
+                            <div class="d-flex gap-2 align-items-center">
+                                <input type="color" id="warningColor" class="form-control" style="height: 50px;">
+                                <input type="text" id="warningColorHex" class="form-control" placeholder="#ed8936">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-exclamation-circle"></i> Color Error
+                            </label>
+                            <div class="d-flex gap-2 align-items-center">
+                                <input type="color" id="errorColor" class="form-control" style="height: 50px;">
+                                <input type="text" id="errorColorHex" class="form-control" placeholder="#e53e3e">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-info-circle"></i> Color Información
+                            </label>
+                            <div class="d-flex gap-2 align-items-center">
+                                <input type="color" id="infoColor" class="form-control" style="height: 50px;">
+                                <input type="text" id="infoColorHex" class="form-control" placeholder="#3182ce">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Estilos de UI -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-square"></i> Estilo de Bordes
+                            </label>
+                            <select id="borderRadius" class="form-control">
+                                <option value="sharp">Bordes Rectos</option>
+                                <option value="normal" selected>Bordes Normales</option>
+                                <option value="rounded">Bordes Redondeados</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-cloud"></i> Intensidad de Sombras
+                            </label>
+                            <select id="shadowIntensity" class="form-control">
+                                <option value="light">Suaves</option>
+                                <option value="medium" selected>Normales</option>
+                                <option value="strong">Fuertes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Vista Previa -->
+            <div class="mb-5">
+                <h3 class="mb-3"><i class="fas fa-eye"></i> Vista Previa</h3>
+                <div class="preview-container">
+                    <div class="preview-card">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Tarjeta de Ejemplo</h4>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-secondary">Este es un ejemplo de cómo se verá el sistema con tu tema personalizado.</p>
+                                
+                                <div class="d-flex gap-2 mb-3">
+                                    <button class="btn btn-primary">Primario</button>
+                                    <button class="btn btn-success">Éxito</button>
+                                    <button class="btn btn-warning">Advertencia</button>
+                                    <button class="btn btn-danger">Error</button>
+                                    <button class="btn btn-info">Información</button>
+                                </div>
+                                
+                                <div class="d-flex gap-2 mb-3">
+                                    <span class="badge badge-primary">Primary</span>
+                                    <span class="badge badge-success">Success</span>
+                                    <span class="badge badge-warning">Warning</span>
+                                    <span class="badge badge-danger">Danger</span>
+                                    <span class="badge badge-info">Info</span>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Campo de Ejemplo</label>
+                                    <input type="text" class="form-control" placeholder="Escribe algo...">
+                                </div>
+                                
+                                <div class="alert alert-success mt-3">
+                                    <i class="fas fa-check-circle"></i> Mensaje de éxito
+                                </div>
+                                <div class="alert alert-warning mt-3">
+                                    <i class="fas fa-exclamation-triangle"></i> Mensaje de advertencia
+                                </div>
+                                <div class="alert alert-danger mt-3">
+                                    <i class="fas fa-exclamation-circle"></i> Mensaje de error
+                                </div>
+                                <div class="alert alert-info mt-3">
+                                    <i class="fas fa-info-circle"></i> Mensaje de información
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-footer">
+            <div class="d-flex justify-content-between">
+                <button class="btn btn-secondary" onclick="resetTheme()">
+                    <i class="fas fa-undo"></i> Restaurar Predeterminado
+                </button>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" onclick="previewTheme()">
+                        <i class="fas fa-eye"></i> Vista Previa
+                    </button>
+                    <button class="btn btn-primary" onclick="saveTheme()">
+                        <i class="fas fa-save"></i> Guardar Tema
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.preset-themes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.theme-card {
+    padding: var(--spacing-lg);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    text-align: center;
+}
+
+.theme-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-color);
+}
+
+.theme-card.active {
+    border-color: var(--primary-color);
+    background: var(--info-bg);
+}
+
+.theme-colors {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    margin: var(--spacing-md) 0;
+}
+
+.theme-color-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-sm);
+}
+
+.theme-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.preview-container {
+    background: var(--bg-secondary);
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-lg);
+}
+
+.preview-card {
+    max-width: 600px;
+    margin: 0 auto;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Función para esperar a que themeCustomizer esté disponible
+function waitForThemeCustomizer(callback, timeout = 5000) {
+    const startTime = Date.now();
+    
+    function check() {
+        if (window.themeCustomizer) {
+            callback();
+        } else if (Date.now() - startTime < timeout) {
+            setTimeout(check, 100);
+        } else {
+            console.error('ThemeCustomizer no se cargó después de 5 segundos');
+        }
+    }
+    
+    check();
+}
+
+function loadPresetThemes() {
+    if (!window.themeCustomizer) {
+        console.error('ThemeCustomizer no está disponible');
+        return;
+    }
+    
+    const presets = window.themeCustomizer.getPresetThemes();
+    console.log('Presets:', presets);
+    const container = document.querySelector('.preset-themes-grid');
+    
+    Object.entries(presets).forEach(([key, theme]) => {
+        const card = document.createElement('div');
+        card.className = 'theme-card';
+        card.onclick = () => applyPresetTheme(theme);
+        
+        card.innerHTML = `
+            <div class="theme-name">${theme.name}</div>
+            <div class="theme-colors">
+                <div class="theme-color-circle" style="background: ${theme.primaryColor}"></div>
+                <div class="theme-color-circle" style="background: ${theme.primaryDark}"></div>
+                <div class="theme-color-circle" style="background: ${theme.secondaryColor}"></div>
+            </div>
+        `;
+        
+        container.appendChild(card);
+    });
+}
+
+// Aplicar tema predefinido
+function applyPresetTheme(theme) {
+    document.getElementById('primaryColor').value = theme.primaryColor;
+    document.getElementById('primaryColorHex').value = theme.primaryColor;
+    document.getElementById('primaryDark').value = theme.primaryDark;
+    document.getElementById('primaryDarkHex').value = theme.primaryDark;
+    document.getElementById('primaryLight').value = theme.primaryLight;
+    document.getElementById('primaryLightHex').value = theme.primaryLight;
+    document.getElementById('secondaryColor').value = theme.secondaryColor;
+    document.getElementById('secondaryColorHex').value = theme.secondaryColor;
+    document.getElementById('secondaryDark').value = theme.secondaryDark;
+    document.getElementById('secondaryDarkHex').value = theme.secondaryDark;
+    document.getElementById('secondaryLight').value = theme.secondaryLight;
+    document.getElementById('secondaryLightHex').value = theme.secondaryLight;
+    document.getElementById('successColor').value = theme.successColor;
+    document.getElementById('successColorHex').value = theme.successColor;
+    document.getElementById('warningColor').value = theme.warningColor;
+    document.getElementById('warningColorHex').value = theme.warningColor;
+    document.getElementById('errorColor').value = theme.errorColor;
+    document.getElementById('errorColorHex').value = theme.errorColor;
+    document.getElementById('infoColor').value = theme.infoColor;
+    document.getElementById('infoColorHex').value = theme.infoColor;
+    document.getElementById('borderRadius').value = theme.borderRadius;
+    document.getElementById('shadowIntensity').value = theme.shadowIntensity;
+    
+    previewTheme();
+}
+
+// Vista previa del tema
+function previewTheme() {
+    const theme = {
+        primaryColor: document.getElementById('primaryColor').value,
+        primaryDark: document.getElementById('primaryDark').value,
+        primaryLight: document.getElementById('primaryLight').value,
+        secondaryColor: document.getElementById('secondaryColor').value,
+        secondaryDark: document.getElementById('secondaryDark').value,
+        secondaryLight: document.getElementById('secondaryLight').value,
+        successColor: document.getElementById('successColor').value,
+        warningColor: document.getElementById('warningColor').value,
+        errorColor: document.getElementById('errorColor').value,
+        infoColor: document.getElementById('infoColor').value,
+        borderRadius: document.getElementById('borderRadius').value,
+        shadowIntensity: document.getElementById('shadowIntensity').value
+    };
+    
+    if (window.themeCustomizer) {
+        window.themeCustomizer.applyTheme(theme);
+    }
+}
+
+// Guardar tema
+async function saveTheme() {
+    const theme = {
+        primaryColor: document.getElementById('primaryColor').value,
+        primaryDark: document.getElementById('primaryDark').value,
+        primaryLight: document.getElementById('primaryLight').value,
+        secondaryColor: document.getElementById('secondaryColor').value,
+        secondaryDark: document.getElementById('secondaryDark').value,
+        secondaryLight: document.getElementById('secondaryLight').value,
+        successColor: document.getElementById('successColor').value,
+        successBg: getTransparentColor(document.getElementById('successColor').value, 0.25), // 25% opacity
+        successDark: getDarkerColor(document.getElementById('successColor').value),
+        errorColor: document.getElementById('errorColor').value,
+        errorBg: getTransparentColor(document.getElementById('errorColor').value, 0.25), // 25% opacity
+        errorDark: getDarkerColor(document.getElementById('errorColor').value),
+        warningColor: document.getElementById('warningColor').value,
+        warningBg: getTransparentColor(document.getElementById('warningColor').value, 0.25), // 25% opacity
+        warningDark: getDarkerColor(document.getElementById('warningColor').value),
+        infoColor: document.getElementById('infoColor').value,
+        infoBg: getTransparentColor(document.getElementById('infoColor').value, 0.25), // 25% opacity
+        infoDark: getDarkerColor(document.getElementById('infoColor').value),
+        borderRadius: document.getElementById('borderRadius').value,
+        shadowIntensity: document.getElementById('shadowIntensity').value
+    };
+    
+    if (!window.themeCustomizer) {
+        showMessage('ThemeCustomizer no está disponible', 'error');
+        return;
+    }
+    
+    const result = await window.themeCustomizer.saveTheme(theme);
+    
+    if (result.success) {
+        showMessage('Tema guardado exitosamente', 'success');
+    } else {
+        showMessage(`Error al guardar el tema: ${result.error}`, 'error');
+    }
+}
+
+// Función para obtener un color transparente
+function getTransparentColor(hex, opacity) {
+    // Eliminar # si está presente
+    hex = hex.replace('#', '');
+    
+    // Convertir a RGB
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    
+    // Devolver RGBA
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}
+
+// Función para obtener un color más oscuro
+function getDarkerColor(hex) {
+    // Eliminar # si está presente
+    hex = hex.replace('#', '');
+    
+    // Convertir a RGB
+    let r = parseInt(hex.substr(0, 2), 16);
+    let g = parseInt(hex.substr(2, 2), 16);
+    let b = parseInt(hex.substr(4, 2), 16);
+    
+    // Oscurecer el color (reducir cada componente en 20%)
+    r = Math.max(0, Math.floor(r * 0.8));
+    g = Math.max(0, Math.floor(g * 0.8));
+    b = Math.max(0, Math.floor(b * 0.8));
+    
+    // Convertir de vuelta a hex
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}
+
+// Resetear tema
+function resetTheme() {
+    if (!window.themeCustomizer) {
+        console.error('ThemeCustomizer no está disponible');
+        return;
+    }
+    
+    window.themeCustomizer.resetTheme();
+    
+    // Actualizar inputs con valores predeterminados
+    const defaultTheme = window.themeCustomizer.defaultTheme;
+    document.getElementById('primaryColor').value = defaultTheme.primaryColor;
+    document.getElementById('primaryColorHex').value = defaultTheme.primaryColor;
+    document.getElementById('primaryDark').value = defaultTheme.primaryDark;
+    document.getElementById('primaryDarkHex').value = defaultTheme.primaryDark;
+    document.getElementById('primaryLight').value = defaultTheme.primaryLight;
+    document.getElementById('primaryLightHex').value = defaultTheme.primaryLight;
+    document.getElementById('secondaryColor').value = defaultTheme.secondaryColor;
+    document.getElementById('secondaryColorHex').value = defaultTheme.secondaryColor;
+    document.getElementById('secondaryDark').value = defaultTheme.secondaryDark;
+    document.getElementById('secondaryDarkHex').value = defaultTheme.secondaryDark;
+    document.getElementById('secondaryLight').value = defaultTheme.secondaryLight;
+    document.getElementById('secondaryLightHex').value = defaultTheme.secondaryLight;
+    document.getElementById('successColor').value = defaultTheme.successColor;
+    document.getElementById('successColorHex').value = defaultTheme.successColor;
+    document.getElementById('warningColor').value = defaultTheme.warningColor;
+    document.getElementById('warningColorHex').value = defaultTheme.warningColor;
+    document.getElementById('errorColor').value = defaultTheme.errorColor;
+    document.getElementById('errorColorHex').value = defaultTheme.errorColor;
+    document.getElementById('infoColor').value = defaultTheme.infoColor;
+    document.getElementById('infoColorHex').value = defaultTheme.infoColor;
+    document.getElementById('borderRadius').value = 'normal';
+    document.getElementById('shadowIntensity').value = 'medium';
+    
+    showMessage('Tema restaurado a valores predeterminados', 'info');
+}
+
+// Sincronizar color pickers con inputs de texto
+function syncColorInputs() {
+    const pairs = [
+        ['primaryColor', 'primaryColorHex'],
+        ['primaryDark', 'primaryDarkHex'],
+        ['primaryLight', 'primaryLightHex'],
+        ['secondaryColor', 'secondaryColorHex'],
+        ['secondaryDark', 'secondaryDarkHex'],
+        ['secondaryLight', 'secondaryLightHex'],
+        ['successColor', 'successColorHex'],
+        ['warningColor', 'warningColorHex'],
+        ['errorColor', 'errorColorHex'],
+        ['infoColor', 'infoColorHex']
+    ];
+    
+    pairs.forEach(([pickerId, hexId]) => {
+        const picker = document.getElementById(pickerId);
+        const hex = document.getElementById(hexId);
+        
+        picker.addEventListener('input', () => {
+            hex.value = picker.value;
+            previewTheme();
+        });
+        
+        hex.addEventListener('input', () => {
+            if (/^#[0-9A-F]{6}$/i.test(hex.value)) {
+                picker.value = hex.value;
+                previewTheme();
+            }
+        });
+    });
+}
+
+// Actualizar vista previa en tiempo real
+function setupLivePreview() {
+    ['borderRadius', 'shadowIntensity'].forEach(id => {
+        document.getElementById(id).addEventListener('change', previewTheme);
+    });
+}
+
+// Mostrar mensaje
+function showMessage(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} mt-3`;
+    alertDiv.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'times' : 'info'}-circle"></i>
+        ${message}
+    `;
+    
+    const container = document.querySelector('.card-body');
+    container.insertBefore(alertDiv, container.firstChild);
+    
+    setTimeout(() => alertDiv.remove(), 3000);
+}
+
+// Inicializar cuando themeCustomizer esté disponible
+document.addEventListener('DOMContentLoaded', () => {
+    waitForThemeCustomizer(() => {
+        loadPresetThemes();
+        syncColorInputs();
+        setupLivePreview();
+        
+        // Cargar tema actual
+        const savedTheme = window.themeCustomizer.getSavedTheme();
+        if (savedTheme) {
+            applyPresetTheme(savedTheme);
+        }
+    });
+});
+</script>
+{% endblock %}
+```

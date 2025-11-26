@@ -1,0 +1,64 @@
+{% extends 'Principal/base.html' %}
+
+{% block title %}Caja - Ticket Pedido{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-body">
+            <!-- Encabezado -->
+            <div class="text-center mb-4">
+                <h2 class="mb-2"><i class="fas fa-receipt"></i> Ticket de Pedido</h2>
+                <p class="text-muted mb-0">Pedido #{{ pedido.codigo }}</p>
+            </div>
+
+            <!-- Información del pedido -->
+            <div class="mb-4">
+                <p><strong>Fecha/Hora:</strong> {{ pedido.fecha_hora|date:"d/m/Y H:i" }}</p>
+                <p><strong>Usuario:</strong> {% if pedido.usuario %}{{ pedido.usuario.username }}{% else %}Anónimo{% endif %}</p>
+                <p><strong>Sucursal:</strong> {{ pedido.sucursal.nombre_sucursal }}</p>
+                <p><strong>Estado:</strong> <span class="badge badge-{{ pedido.estado }}">{{ pedido.get_estado_display }}</span></p>
+            </div>
+
+            <!-- Tabla de productos -->
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cant.</th>
+                            <th>Precio</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for detalle in productos_detalle %}
+                        <tr>
+                            <td>{{ detalle.nombre }}</td>
+                            <td>{{ detalle.cantidad }}</td>
+                            <td>${{ detalle.precio_unitario|floatformat:2 }}</td>
+                            <td>${{ detalle.subtotal|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Total -->
+            <div class="d-flex justify-content-end">
+                <div class="text-end">
+                    <h4 class="mb-1">Total: ${{ pedido.total|floatformat:2 }}</h4>
+                    {% if pedido.puntos_usados > 0 %}
+                        <small class="text-success">-{{ pedido.puntos_usados }} pts usados</small>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Botón imprimir -->
+            <button class="btn btn-secondary w-100 mt-4" onclick="window.print()">
+                <i class="fas fa-print"></i> Imprimir
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

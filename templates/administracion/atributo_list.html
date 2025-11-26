@@ -1,0 +1,430 @@
+{% extends 'Principal/base.html' %}
+
+{% block content %}
+<div class="list-container">
+    <div class="list-header">
+        <h2><i class="fas fa-tags"></i> Atributos</h2>
+        <a href="{% url 'administracion:atributo_add' %}" class="add-button">
+            <i class="fas fa-plus"></i> Nuevo Atributo
+        </a>
+    </div>
+
+    <!-- Mensajes de éxito/error -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="table-container">
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th>Categoría</th>
+                    <th>Subcategoría</th>
+                    <th>Nombre</th>
+                    <th>Tipo</th>
+                    <th>Requerido</th>
+                    <th>Opciones</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for atributo in atributos %}
+                <tr id="atributo-{{ atributo.id }}">
+                    <td>
+                        <span class="categoria-badge">
+                            {{ atributo.categoria_nombre|default:"Sin categoría" }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="subcategoria-badge">
+                            {{ atributo.subcategoria_nombre|default:"Sin subcategoría" }}
+                        </span>
+                    </td>
+                    <td>{{ atributo.nombre }}</td>
+                    <td>
+                        <span class="tipo-badge tipo-{{ atributo.tipo }}">
+                            {{ atributo.tipo|title }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge {% if atributo.requerido %}active{% else %}inactive{% endif %}">
+                            {{ atributo.requerido|yesno:"Sí,No" }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if atributo.opciones %}
+                            <div class="opciones-list">
+                                {% for opcion in atributo.opciones|slice:":3" %}
+                                    <span class="opcion-tag">{{ opcion }}</span>
+                                {% endfor %}
+                                {% if atributo.opciones|length > 3 %}
+                                    <span class="more-options">+{{ atributo.opciones|length|add:"-3" }} más</span>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <span class="no-options">N/A</span>
+                        {% endif %}
+                    </td>
+                    <td class="actions">
+                        <a href="{% url 'administracion:atributo_edit' atributo.id %}" class="action-button edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <button class="action-button delete" onclick="confirmarEliminacion('{{ atributo.id }}', '{{ atributo.nombre }}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="empty-message">No hay atributos registrados</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal de confirmación -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Confirmar eliminación</h3>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p>¿Estás seguro de que deseas eliminar el atributo "<span id="atributo-nombre"></span>"?</p>
+            <p>Esta acción no se puede deshacer.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="cancel-button" onclick="cerrarModal()">Cancelar</button>
+            <button class="delete-button" onclick="eliminarAtributo()">Eliminar</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.list-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.add-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.add-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102,126,234,0.2);
+}
+
+.table-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+.modern-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.modern-table th {
+    background: #f7fafc;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #4a5568;
+}
+
+.modern-table td {
+    padding: 1rem;
+    border-top: 1px solid #edf2f7;
+    vertical-align: top;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.status-badge.active {
+    background: #c6f6d5;
+    color: #2f855a;
+}
+
+.status-badge.inactive {
+    background: #fed7d7;
+    color: #c53030;
+}
+
+.categoria-badge {
+    background: #e2e8f0;
+    color: #4a5568;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.tipo-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.tipo-texto { background: #bee3f8; color: #2b6cb0; }
+.tipo-numero { background: #c6f6d5; color: #2f855a; }
+.tipo-boolean { background: #fed7d7; color: #c53030; }
+.tipo-fecha { background: #fbb6ce; color: #b83280; }
+.tipo-lista { background: #e9d8fd; color: #6b46c1; }
+
+.opciones-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.opcion-tag {
+    background: #f7fafc;
+    color: #4a5568;
+    padding: 0.125rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    border: 1px solid #e2e8f0;
+}
+
+.more-options {
+    color: #718096;
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+.no-options {
+    color: #a0aec0;
+    font-style: italic;
+}
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-button {
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-button.edit {
+    background: #ebf4ff;
+    color: #3182ce;
+}
+
+.action-button.delete {
+    background: #fff5f5;
+    color: #e53e3e;
+}
+
+.action-button:hover {
+    transform: scale(1.1);
+}
+
+.empty-message {
+    text-align: center;
+    color: #718096;
+    padding: 2rem !important;
+}
+
+/* Estilos del modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 0;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #edf2f7;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    padding: 1.5rem;
+    border-top: 1px solid #edf2f7;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: black;
+}
+
+.delete-button {
+    background: #e53e3e;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.cancel-button {
+    background: #f7fafc;
+    color: #4a5568;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Estilos para mensajes */
+.alert {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+}
+
+.alert-success {
+    background: #c6f6d5;
+    color: #2f855a;
+    border: 1px solid #9ae6b4;
+}
+
+.alert-error {
+    background: #fed7d7;
+    color: #c53030;
+    border: 1px solid #feb2b2;
+}
+</style>
+
+<script>
+let atributoAEliminar = null;
+
+function confirmarEliminacion(atributoId, atributoNombre) {
+    atributoAEliminar = atributoId;
+    document.getElementById('atributo-nombre').textContent = atributoNombre;
+    document.getElementById('deleteModal').style.display = 'block';
+}
+
+function cerrarModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+    atributoAEliminar = null;
+}
+
+function eliminarAtributo() {
+    if (!atributoAEliminar) return;
+    
+    fetch(`{% url 'administracion:atributo_delete_ajax' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', atributoAEliminar), {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById(`atributo-${atributoAEliminar}`).remove();
+            cerrarModal();
+            showMessage('Atributo eliminado exitosamente', 'success');
+        } else {
+            showMessage('Error al eliminar el atributo: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        showMessage('Error de conexión', 'error');
+        console.error('Error:', error);
+    });
+}
+
+function showMessage(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type}`;
+    alertDiv.textContent = message;
+    
+    const container = document.querySelector('.list-container');
+    container.insertBefore(alertDiv, container.firstChild);
+    
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 3000);
+}
+
+// Cerrar modal al hacer clic fuera de él
+window.onclick = function(event) {
+    const modal = document.getElementById('deleteModal');
+    if (event.target == modal) {
+        cerrarModal();
+    }
+}
+
+// Agregar token CSRF si no existe
+if (!document.querySelector('[name=csrfmiddlewaretoken]')) {
+    const token = document.createElement('input');
+    token.type = 'hidden';
+    token.name = 'csrfmiddlewaretoken';
+    token.value = '{{ csrf_token }}';
+    document.body.appendChild(token);
+}
+</script>
+{% endblock %}

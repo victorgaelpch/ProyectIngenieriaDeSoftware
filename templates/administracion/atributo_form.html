@@ -1,0 +1,444 @@
+{% extends 'Principal/base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <div class="form-header">
+            <h2>
+                <i class="fas fa-tags"></i> 
+                {% if form.instance.pk %}Editar{% else %}Nuevo{% endif %} Atributo
+            </h2>
+            <a href="{% url 'administracion:atributo_list' %}" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
+        
+        <!-- Mensajes de error del formulario -->
+        {% if form.non_field_errors %}
+            <div class="error-message">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+        
+        <form method="post" class="modern-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <div class="input-group">
+                    {{ form.categoria_id }}
+                    <label>Categoría</label>
+                </div>
+                {% if form.categoria_id.errors %}
+                <div class="error-message">
+                    {{ form.categoria_id.errors|join:", " }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <div class="input-group">
+                    {{ form.subcategoria_id }}
+                    <label>Subcategoría</label>
+                </div>
+                {% if form.subcategoria_id.errors %}
+                <div class="error-message">
+                    {{ form.subcategoria_id.errors|join:", " }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <div class="input-group">
+                    {{ form.nombre }}
+                    <label>Nombre</label>
+                </div>
+                {% if form.nombre.errors %}
+                <div class="error-message">
+                    {{ form.nombre.errors|join:", " }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <div class="input-group">
+                    {{ form.tipo }}
+                    <label>Tipo</label>
+                </div>
+                {% if form.tipo.errors %}
+                <div class="error-message">
+                    {{ form.tipo.errors|join:", " }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="id_requerido" name="requerido" class="modern-checkbox" 
+                           {% if form.requerido.value %}checked{% endif %}>
+                    <label for="id_requerido" class="checkbox-label">
+                        <span class="checkbox-custom"></span>
+                        Requerido
+                    </label>
+                </div>
+                {% if form.requerido.errors %}
+                <div class="error-message">
+                    {{ form.requerido.errors|join:", " }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group" id="opciones-group">
+                <div class="input-group">
+                    {{ form.opciones_text }}
+                    <label>Opciones</label>
+                </div>
+                <small class="help-text">{{ form.opciones_text.help_text }}</small>
+                {% if form.opciones_text.errors %}
+                <div class="error-message">
+                    {{ form.opciones_text.errors|join:", " }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="save-button">
+                    <i class="fas fa-save"></i> Guardar
+                </button>
+                <a href="{% url 'administracion:atributo_list' %}" class="cancel-button">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.form-container {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.form-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+.form-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1.5rem;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modern-form {
+    padding: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.input-group {
+    position: relative;
+}
+
+.modern-input {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.modern-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+    outline: none;
+}
+
+.input-group label {
+    position: absolute;
+    left: 1rem;
+    top: -0.5rem;
+    background: white;
+    padding: 0 0.5rem;
+    color: #4a5568;
+    font-size: 0.875rem;
+}
+
+/* Estilos para checkbox personalizado */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+}
+
+.modern-checkbox {
+    display: none;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #4a5568;
+}
+
+.checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 4px;
+    margin-right: 0.75rem;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.modern-checkbox:checked + .checkbox-label .checkbox-custom {
+    background: #667eea;
+    border-color: #667eea;
+}
+
+.modern-checkbox:checked + .checkbox-label .checkbox-custom::after {
+    content: '✓';
+    position: absolute;
+    color: white;
+    font-size: 14px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.save-button, .cancel-button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    border: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.save-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    cursor: pointer;
+}
+
+.save-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102,126,234,0.2);
+}
+
+.cancel-button {
+    background: #f7fafc;
+    color: #4a5568;
+}
+
+.cancel-button:hover {
+    background: #edf2f7;
+}
+
+.error-message {
+    color: #e53e3e;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: #fed7d7;
+    border-radius: 4px;
+    border-left: 4px solid #e53e3e;
+}
+
+.back-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.back-button:hover {
+    background: rgba(255,255,255,0.3);
+    transform: translateX(-5px);
+}
+
+.help-text {
+    color: #718096;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const categoriaSelect = document.getElementById('id_categoria_id');
+    const subcategoriaSelect = document.getElementById('id_subcategoria_id');
+    const checkbox = document.getElementById('id_requerido');
+    const         const form = document.querySelector('.modern-form');
+    const opcionesGroup = document.getElementById('opciones-group');
+    
+    // Manejar checkbox requerido
+    const hiddenRequirido = document.createElement('input');
+    hiddenRequirido.type = 'hidden';
+    hiddenRequirido.name = 'requerido';
+    hiddenRequirido.value = 'false';
+    form.appendChild(hiddenRequirido);
+    
+    checkbox.addEventListener('change', function() {
+        hiddenRequirido.value = this.checked ? 'true' : 'false';
+    });
+    
+    hiddenRequirido.value = checkbox.checked ? 'true' : 'false';
+    
+    // Cargar subcategorías cuando cambie la categoría
+    categoriaSelect.addEventListener('change', function() {
+        const categoriaId = this.value;
+        
+        if (!categoriaId) {
+            subcategoriaSelect.innerHTML = '<option value="">Primero selecciona una categoría</option>';
+            return;
+        }
+        
+        // Mostrar loading
+        subcategoriaSelect.innerHTML = '<option value="">Cargando subcategorías...</option>';
+        
+        fetch(`/administracion/api/categorias/${categoriaId}/subcategorias/`)
+            .then(response => response.json())
+            .then(data => {
+                let options = '<option value="">Selecciona una subcategoría</option>';
+                data.subcategorias.forEach(subcategoria => {
+                    options += `<option value="${subcategoria.id}">${subcategoria.nombre}</option>`;
+                });
+                subcategoriaSelect.innerHTML = options;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                subcategoriaSelect.innerHTML = '<option value="">Error al cargar subcategorías</option>';
+            });
+    });
+    
+    // Mostrar/ocultar opciones según el tipo
+    function toggleOpciones() {
+        const tipoSelect = document.querySelector('select[name="tipo"]');
+        if (tipoSelect && tipoSelect.value === 'lista') {
+            opcionesGroup.style.display = 'block';
+        } else {
+            opcionesGroup.style.display = 'none';
+        }
+    }
+    
+    const tipoSelect = document.querySelector('select[name="tipo"]');
+    if (tipoSelect) {
+        tipoSelect.addEventListener('change', toggleOpciones);
+        toggleOpciones(); // Ejecutar al cargar
+    }
+});
+    
+    // Manejar checkbox requerido
+    const hiddenRequirido = document.createElement('input');
+    hiddenRequirido.type = 'hidden';
+    hiddenRequirido.name = 'requerido';
+    hiddenRequirido.value = 'false';
+    form.appendChild(hiddenRequirido);
+    
+    checkbox.addEventListener('change', function() {
+        hiddenRequirido.value = this.checked ? 'true' : 'false';
+    });
+    
+    hiddenRequirido.value = checkbox.checked ? 'true' : 'false';
+    
+    // Cargar subcategorías cuando cambie la categoría
+    categoriaSelect.addEventListener('change', function() {
+        const categoriaId = this.value;
+        
+        if (!categoriaId) {
+            subcategoriaSelect.innerHTML = '<option value="">Primero selecciona una categoría</option>';
+            return;
+        }
+        
+        // Mostrar loading
+        subcategoriaSelect.innerHTML = '<option value="">Cargando subcategorías...</option>';
+        
+        fetch(`/administracion/api/categorias/${categoriaId}/subcategorias/`)
+            .then(response => response.json())
+            .then(data => {
+                let options = '<option value="">Selecciona una subcategoría</option>';
+                data.subcategorias.forEach(subcategoria => {
+                    options += `<option value="${subcategoria.id}">${subcategoria.nombre}</option>`;
+                });
+                subcategoriaSelect.innerHTML = options;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                subcategoriaSelect.innerHTML = '<option value="">Error al cargar subcategorías</option>';
+            });
+    });
+    
+    // Mostrar/ocultar opciones según el tipo
+    function toggleOpciones() {
+        const tipoSelect = document.querySelector('select[name="tipo"]');
+        if (tipoSelect && tipoSelect.value === 'lista') {
+            opcionesGroup.style.display = 'block';
+        } else {
+            opcionesGroup.style.display = 'none';
+        }
+    }
+    
+    const tipoSelect = document.querySelector('select[name="tipo"]');
+    if (tipoSelect) {
+        tipoSelect.addEventListener('change', toggleOpciones);
+        toggleOpciones(); // Ejecutar al cargar
+    }
+    document.querySelector('.modern-form');
+    const tipoSelect = document.querySelector('select[name="tipo"]');
+    const opcionesGroup = document.getElementById('opciones-group');
+    
+    // Manejar checkbox requerido
+    const hiddenRequirido = document.createElement('input');
+    hiddenRequirido.type = 'hidden';
+    hiddenRequirido.name = 'requerido';
+    hiddenRequirido.value = 'false';
+    form.appendChild(hiddenRequirido);
+    
+    checkbox.addEventListener('change', function() {
+        hiddenRequirido.value = this.checked ? 'true' : 'false';
+    });
+    
+    hiddenRequirido.value = checkbox.checked ? 'true' : 'false';
+    
+    // Mostrar/ocultar opciones según el tipo
+    function toggleOpciones() {
+        const tipoSelect = document.querySelector('select[name="tipo"]');
+        if (tipoSelect && tipoSelect.value === 'lista') {
+            opcionesGroup.style.display = 'block';
+        } else {
+            opcionesGroup.style.display = 'none';
+        }
+    }
+    
+    const tipoSelect = document.querySelector('select[name="tipo"]');
+    if (tipoSelect) {
+        tipoSelect.addEventListener('change', toggleOpciones);
+        toggleOpciones(); // Ejecutar al cargar
+    }
+</script>
+{% endblock %}

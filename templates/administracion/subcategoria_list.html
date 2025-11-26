@@ -1,0 +1,202 @@
+{% extends 'Principal/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-folder-open"></i> Subcategorías</h2>
+        <a href="{% url 'administracion:subcategoria_add' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Nueva Subcategoría
+        </a>
+    </div>
+
+    <!-- Mensajes de éxito/error -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="table-container">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Categoría</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subcategoria in subcategorias %}
+                <tr id="subcategoria-{{ subcategoria.id }}">
+                    <td>
+                        <span class="badge badge-secondary">
+                            {{ subcategoria.categoria_nombre|default:"Sin categoría" }}
+                        </span>
+                    </td>
+                    <td>{{ subcategoria.nombre }}</td>
+                    <td>{{ subcategoria.descripcion|truncatechars:50 }}</td>
+                    <td>
+                        <span class="badge {% if subcategoria.activo %}badge-success{% else %}badge-danger{% endif %}">
+                            {{ subcategoria.activo|yesno:"Activo,Inactivo" }}
+                        </span>
+                    </td>
+                    <td class="d-flex gap-2">
+                        <a href="{% url 'administracion:subcategoria_edit' subcategoria.id %}" class="btn btn-sm btn-warning">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <button class="btn btn-sm btn-danger" onclick="confirmarEliminacion('{{ subcategoria.id }}', '{{ subcategoria.nombre }}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">No hay subcategorías registradas</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal de confirmación -->
+<div class="modal" id="deleteModal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Confirmar eliminación</h3>
+            <span class="close" onclick="cerrarModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p>¿Estás seguro de que deseas eliminar la subcategoría "<span id="subcategoria-nombre"></span>"?</p>
+            <p>Esta acción no se puede deshacer.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+            <button class="btn btn-danger" onclick="eliminarSubcategoria()">Eliminar</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 0;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.modal-body {
+    padding: 1.5rem;
+}
+.modal-footer {
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+.close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.close:hover {
+    color: black;
+}
+</style>
+
+<script>
+let subcategoriaAEliminar = null;
+
+function confirmarEliminacion(subcategoriaId, subcategoriaNombre) {
+    subcategoriaAEliminar = subcategoriaId;
+    document.getElementById('subcategoria-nombre').textContent = subcategoriaNombre;
+    document.getElementById('deleteModal').style.display = 'block';
+}
+
+function cerrarModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+    subcategoriaAEliminar = null;
+}
+
+function eliminarSubcategoria() {
+    if (!subcategoriaAEliminar) return;
+    
+    fetch(`{% url 'administracion:subcategoria_delete_ajax' '00000000-0000-0000-0000-000000000000' %}`.replace('00000000-0000-0000-0000-000000000000', subcategoriaAEliminar), {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById(`subcategoria-${subcategoriaAEliminar}`).remove();
+            cerrarModal();
+            showMessage('Subcategoría eliminada exitosamente', 'success');
+        } else {
+            showMessage('Error al eliminar la subcategoría: ' + data.message, 'danger');
+        }
+    })
+    .catch(error => {
+        showMessage('Error de conexión', 'danger');
+        console.error('Error:', error);
+    });
+}
+
+function showMessage(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type}`;
+    alertDiv.textContent = message;
+    
+    const container = document.querySelector('.container');
+    container.insertBefore(alertDiv, container.firstChild);
+    
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 3000);
+}
+
+// Cerrar modal al hacer clic fuera de él
+window.onclick = function(event) {
+    const modal = document.getElementById('deleteModal');
+    if (event.target == modal) {
+        cerrarModal();
+    }
+}
+
+// Agregar token CSRF si no existe
+if (!document.querySelector('[name=csrfmiddlewaretoken]')) {
+    const token = document.createElement('input');
+    token.type = 'hidden';
+    token.name = 'csrfmiddlewaretoken';
+    token.value = '{{ csrf_token }}';
+    document.body.appendChild(token);
+}
+</script>
+{% endblock %}

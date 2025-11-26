@@ -1,0 +1,38 @@
+{% extends "Principal/base.html" %}
+{% block content %}
+<div class="container py-4" id="ticket">
+  <div class="card text-center">
+    <div class="card-body">
+      <h4>{{ mensaje }}</h4>
+      {% if nombre %}<p>Nombre: {{ nombre }}</p>{% endif %}
+      {% if telefono %}<p>Teléfono: {{ telefono }}</p>{% endif %}
+      <p>¡Acércate al mostrador con tu código!</p>
+      <p><strong>Código de pedido:</strong> <span class="badge badge-primary">{{ pedido.codigo }}</span></p>
+
+      {% if pedido.puntos_usados > 0 %}
+        <div class="alert alert-info mt-3">
+          Usaste <strong>{{ pedido.puntos_usados }}</strong> puntos para pagar este pedido.
+        </div>
+      {% endif %}
+
+      {% if pedido.puntos_ganados > 0 %}
+        <div class="alert alert-success mt-2">
+          ¡Ganaste <strong>{{ pedido.puntos_ganados }}</strong> puntos con tu compra!
+        </div>
+      {% endif %}
+
+      <button class="btn btn-outline-secondary mt-3" onclick="window.print()">Imprimir ticket</button>
+      <a href="{% url 'kiosko_pedido' %}" class="btn btn-primary mt-3">Nuevo pedido</a>
+    </div>
+  </div>
+</div>
+
+<style>
+@media print {
+  body * { visibility: hidden; }
+  #ticket, #ticket * { visibility: visible; }
+  #ticket { position: absolute; left: 0; top: 0; width: 100%; }
+  .btn, a.btn { display: none !important; }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "Principal/base.html" %} 
+{% block content %}
+<div class="container mt-5">
+  <div class="card" style="max-width: 500px; margin: 40px auto;">
+    <div class="card-body p-5">
+      <h2 class="fw-bold mb-4 text-center">Eliminar sucursal</h2>
+      <p class="text-center fs-lg mb-4">
+        ¿Estás seguro de que deseas eliminar la sucursal
+        <strong>{{ sucursal.nombre_sucursal }}</strong>?
+      </p>
+      <form method="post" class="text-center">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger px-5 py-2 fs-lg">
+          Sí, eliminar
+        </button>
+        <a
+          href="{% url 'lista_sucursales' %}"
+          class="btn btn-secondary ms-2 px-5 py-2 fs-lg"
+          >Cancelar</a
+        >
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

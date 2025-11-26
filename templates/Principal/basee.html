@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Restaurante{% endblock %}</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- CSS Principal del Sistema -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    
+    <!-- CSS Adicional por página -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body data-theme='{{ theme_json|safe }}'>
+    
+    <!-- Navegación -->
+    {% include 'components/navbar.html' %}
+    
+    <!-- Contenido Principal -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    {% include 'components/footer.html' %}
+    
+    <!-- Token CSRF para AJAX -->
+    {% csrf_token %}
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    
+    <!-- JavaScript Principal -->
+    <script src="{% static 'js/theme-customizer.js' %}"></script>
+    
+    <!-- JavaScript Adicional por página -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

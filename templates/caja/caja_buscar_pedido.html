@@ -1,0 +1,174 @@
+{% extends 'Principal/base.html' %}
+
+{% block title %}Caja - Buscar Pedido{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2><i class="fas fa-cash-register"></i> Sistema de Caja</h2>
+        </div>
+        
+        <div class="card-body">
+            <!-- Mensajes -->
+            {% if mensaje %}
+                <div class="alert alert-{{ mensaje_tipo|default:'info' }}">
+                    <i class="fas fa-{% if mensaje_tipo == 'success' %}check{% elif mensaje_tipo == 'error' %}times{% elif mensaje_tipo == 'warning' %}exclamation-triangle{% else %}info{% endif %}-circle"></i>
+                    {{ mensaje }}
+                </div>
+            {% endif %}
+            
+            <!-- Búsqueda de pedido -->
+            <div class="row">
+                <div class="col-md-6">
+                    <h4><i class="fas fa-search"></i> Buscar Pedido</h4>
+                    <form method="GET" class="mb-4">
+                        <div class="form-group">
+                            <label>Código del Pedido</label>
+                            <div class="d-flex gap-2">
+                                <input type="text" name="codigo" class="form-control" 
+                                       placeholder="Ej: ABC12345" value="{{ request.GET.codigo }}" 
+                                       autofocus>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="col-md-6">
+                    <h4><i class="fas fa-clock"></i> Pedidos Pendientes</h4>
+                    <div class="pedidos-pendientes">
+                        {% for p in pedidos_pendientes %}
+                            <div class="pedido-item">
+                                <a href="?codigo={{ p.codigo }}">
+                                    <strong>{{ p.codigo }}</strong> - 
+                                    <span class="badge badge-{{ p.estado }}">{{ p.get_estado_display }}</span>
+                                    - ${{ p.total }}
+                                </a>
+                            </div>
+                        {% empty %}
+                            <p class="text-muted">No hay pedidos pendientes</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Detalles del pedido -->
+            {% if pedido %}
+                <hr>
+                <div class="pedido-detalles">
+                    <h4><i class="fas fa-file-invoice"></i> Detalles del Pedido {{ pedido.codigo }}</h4>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>Estado:</strong> 
+                                <span class="badge badge-{{ pedido.estado }}">{{ pedido.get_estado_display }}</span>
+                            </p>
+                            <p><strong>Usuario:</strong> {{ pedido.usuario.username|default:"Anónimo" }}</p>
+                            <p><strong>Total:</strong> ${{ pedido.total }}</p>
+                            <p><strong>Puntos usados:</strong> {{ pedido.puntos_usados }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            {% if pedido.pickup %}
+                                <p><strong>Sucursal:</strong> {{ pedido.sucursal.nombre_sucursal }}</p>
+                                <p><strong>Horario:</strong> {{ pedido.pickup.horario_recoleccion|date:"d/m/Y H:i" }}</p>
+                                <p><strong>Tipo pago:</strong> {{ pedido.pickup.tipo_pago }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Productos -->
+                    <h5>Productos</h5>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Subtotal</th>
+                                <th>Puntos Extra</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in productos_puntos %}
+                                <tr>
+                                    <td>{{ item.nombre }}</td>
+                                    <td>{{ item.cantidad }}</td>
+                                    <td>${{ item.subtotal }}</td>
+                                    <td>{{ item.puntos_extra_total }} pts</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3"><strong>Puntos por productos:</strong></td>
+                                <td><strong>{{ total_puntos_productos }} pts</strong></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3"><strong>Puntos por compra ($30 = 5pts):</strong></td>
+                                <td><strong>{{ puntos_por_compra }} pts</strong></td>
+                            </tr>
+                            <tr class="table-success">
+                                <td colspan="3"><strong>Total puntos a otorgar:</strong></td>
+                                <td><strong>{{ total_puntos }} pts</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    
+                    <!-- Cambiar estado -->
+                    <form method="POST" class="mt-4">
+                        {% csrf_token %}
+                        <input type="hidden" name="codigo" value="{{ pedido.codigo }}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Cambiar Estado</label>
+                                <select name="nuevo_estado" class="form-control">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="preparando">Preparando</option>
+                                    <option value="listo">Listo</option>
+                                    <option value="pagado">Pagado</option>
+                                    <option value="recogido">Recogido</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label>&nbsp;</label>
+                                <button type="submit" class="btn btn-success btn-block">
+                                    <i class="fas fa-check"></i> Actualizar Estado
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.pedidos-pendientes {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.pedido-item {
+    padding: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.pedido-item a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.pedido-item:hover {
+    background: #f8f9fa;
+}
+
+.badge-pendiente { background: #ffc107; }
+.badge-preparando { background: #17a2b8; }
+.badge-listo { background: #28a745; }
+.badge-pagado { background: #007bff; }
+.badge-recogido { background: #6c757d; }
+</style>
+{% endblock %}

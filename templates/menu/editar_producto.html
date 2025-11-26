@@ -1,0 +1,511 @@
+{% extends 'Principal/base.html' %}
+
+{% block title %}Editar Producto{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    {% if not es_gerente %}
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle"></i> 
+            <strong>Acceso denegado:</strong> No tienes permisos para acceder a esta página.
+        </div>
+    {% else %}
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h1 class="mb-0">
+                    <i class="fas fa-edit"></i>
+                    Editar Producto
+                </h1>
+                <p class="mb-0">
+                  Modifica la información del producto
+                </p>
+            </div>
+            <div class="card-body">
+                <!-- Mensajes de error generales -->
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <strong>Error:</strong>
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+                <!-- Mensajes de éxito -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <form method="post" enctype="multipart/form-data" id="productForm">
+                    {% csrf_token %}
+                    <!-- Información básica -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="mb-0">
+                                <i class="fas fa-info-circle"></i>
+                                Información Básica
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-tag"></i>
+                                            {{ form.nombre.label }}
+                                        </label>
+                                        {{ form.nombre }}
+                                        {% if form.nombre.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.nombre.errors|join:", " }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-dollar-sign"></i>
+                                            {{ form.precio.label }}
+                                        </label>
+                                        {{ form.precio }}
+                                        {% if form.precio.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.precio.errors|join:", " }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-star"></i>
+                                            {{ form.puntos_extra.label }}
+                                        </label>
+                                        {{ form.puntos_extra }}
+                                        {% if form.puntos_extra.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.puntos_extra.errors|join:", " }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-align-left"></i>
+                                    {{ form.descripcion.label }}
+                                </label>
+                                {{ form.descripcion }}
+                                {% if form.descripcion.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.descripcion.errors|join:", " }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Categorización -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="mb-0">
+                                <i class="fas fa-folder-open"></i>
+                                Categorización
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-folder"></i>
+                                            {{ form.categoria_id.label }}
+                                        </label>
+                                        {{ form.categoria_id }}
+                                        {% if form.categoria_id.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.categoria_id.errors|join:", " }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-folder-plus"></i>
+                                            {{ form.subcategoria_id.label }}
+                                        </label>
+                                        {{ form.subcategoria_id }}
+                                        {% if form.subcategoria_id.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.subcategoria_id.errors|join:", " }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Imagen y Stock -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="mb-0">
+                                <i class="fas fa-image"></i>
+                                Imagen y Stock
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-upload"></i> <!-- Cambié el ícono -->
+                                            {{ form.imagen.label }}
+                                        </label>
+                                        {{ form.imagen }}
+                                        {% if form.imagen.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.imagen.errors|join:", " }}
+                                            </div>
+                                        {% endif %}
+                                        <small class="form-text text-muted">{{ form.imagen.help_text }}</small>
+                                    </div>
+                                    <!-- Preview de imagen SUBIDA (nueva) -->
+                                    <div id="image-preview-new" style="display: none;">
+                                        <img id="preview-img-new" class="img-fluid rounded" style="max-height: 200px; object-fit: cover;" alt="Vista previa de la imagen subida">
+                                    </div>
+                                    <!-- Mostrar imagen ACTUAL guardada (si existe y es edición) -->
+                                    {% if form.instance.imagen %}
+                                        <div id="image-current">
+                                            <h6>Imagen Actual:</h6>
+                                            <!-- Usar MEDIA_URL para construir la URL correcta -->
+                                            <img src="{{ MEDIA_URL }}{{ producto.imagen }}" class="img-fluid rounded" style="max-height: 200px; object-fit: cover;" alt="Imagen actual del producto">
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-boxes"></i>
+                                            {{ form.stock.label }}
+                                        </label>
+                                        {{ form.stock }}
+                                        {% if form.stock.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.stock.errors|join:", " }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-toggle-on"></i>
+                                            Estado
+                                        </label>
+                                        <div class="form-check">
+                                            {{ form.activo }}
+                                            <label class="form-check-label" for="{{ form.activo.id_for_label }}">
+                                                {{ form.activo.label }}
+                                            </label>
+                                        </div>
+                                        {% if form.activo.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.activo.errors|join:", " }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Atributos dinámicos -->
+                    <div id="atributos-dinamicos" class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="mb-0">
+                                <i class="fas fa-tags"></i>
+                                Atributos Específicos
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <!-- Atributos existentes (para edición) -->
+                            {% if form.instance.pk and form.instance.atributos %}
+                                <div id="atributos-existentes">
+                                    {% for key, value in form.instance.atributos.items %}
+                                        <div class="form-group mb-3">
+                                            <label class="form-label">Atributo {{ value }}</label>
+                                            <input type="text" name="atributo_{{ key }}" class="form-control" value="{{ value }}">
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!-- Botones de acción -->
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1">
+                            <i class="fas fa-save"></i>Actualizar Producto
+                        </button>
+                        <button type="reset" class="btn btn-warning flex-grow-1">
+                            <i class="fas fa-undo"></i>
+                            Restablecer
+                        </button>
+                        <a href="{% url 'menu:producto_list' %}" class="btn btn-secondary flex-grow-1">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const categoriaSelect = document.getElementById('id_categoria_id');
+    const subcategoriaSelect = document.getElementById('id_subcategoria_id');
+    const atributosContainer = document.getElementById('atributos-dinamicos');
+    const imagenInput = document.getElementById('id_imagen');
+    const imagePreview = document.getElementById('image-preview');
+    const previewImg = document.getElementById('preview-img');
+    // Función para mostrar loading
+    function mostrarLoading(container) {
+        container.innerHTML = `
+            <div class="text-center text-muted py-4">
+                <div class="loading-spinner d-inline-block"></div>
+                <p><strong>Cargando atributos...</strong></p>
+                <p class="mb-0">Espera un momento mientras cargamos los atributos específicos</p>
+            </div>
+        `;
+    }
+    // Función para mostrar error
+    function mostrarError(container, mensaje) {
+        container.innerHTML = `
+            <div class="text-center text-warning py-4">
+                <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                <p><strong>Error al cargar atributos</strong></p>
+                <p class="mb-0">${mensaje}</p>
+            </div>
+        `;
+    }
+    // Preview de imagen
+    function mostrarPreviewImagenSubida(inputFileElement) {
+        const file = inputFileElement.files[0];
+        // const previewDiv = document.getElementById('image-preview-new'); // Ya está en scope
+        // const previewImg = document.getElementById('preview-img-new'); // Ya está en scope
+
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImgNew.src = e.target.result;
+                imagePreviewNew.style.display = 'block'; // Mostrar el contenedor de preview
+            };
+            reader.readAsDataURL(file);
+        } else {
+            imagePreviewNew.style.display = 'none'; // Ocultar si no es una imagen o no hay archivo
+        }
+    }
+    // Event listeners
+    categoriaSelect.addEventListener('change', function() {
+        const categoriaId = this.value;
+        cargarSubcategorias(categoriaId);
+        // Limpiar atributos cuando cambia la categoría
+        document.getElementById('atributos-empty').style.display = 'block';
+        document.querySelector('.atributos-existentes').style.display = 'none';
+    });
+    subcategoriaSelect.addEventListener('change', function() {
+        const subcategoriaId = this.value;
+        cargarAtributos(subcategoriaId);
+    });
+    if (imagenInput) {
+        imagenInput.addEventListener('change', function() { // Cambiado de 'input' a 'change'
+            mostrarPreviewImagenSubida(this);
+        });
+    }
+    // Cargar subcategorías y atributos si ya hay valores seleccionados (modo edición)
+    if (categoriaSelect.value) {
+        cargarSubcategorias(categoriaSelect.value);
+        // Esperar un poco para que se carguen las subcategorías
+        setTimeout(() => {
+            if (subcategoriaSelect.value) {
+                cargarAtributos(subcategoriaSelect.value);
+            }
+        }, 500);
+    }
+    // Función para cargar subcategorías
+    function cargarSubcategorias(categoriaId) {
+        if (!categoriaId) {
+            subcategoriaSelect.innerHTML = '<option value="">Selecciona una subcategoría (opcional)</option>';
+            return;
+        }
+        subcategoriaSelect.innerHTML = '<option value="">Cargando subcategorías...</option>';
+        fetch(`/api/categorias/${categoriaId}/subcategorias/`)
+            .then(response => response.json())
+            .then(data => {
+                let options = '<option value="">Selecciona una subcategoría (opcional)</option>';
+                data.subcategorias.forEach(subcategoria => {
+                    const selected = subcategoriaSelect.dataset.value === subcategoria.id ? 'selected' : '';
+                    options += `<option value="${subcategoria.id}" ${selected}>${subcategoria.nombre}</option>`;
+                });
+                subcategoriaSelect.innerHTML = options;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                subcategoriaSelect.innerHTML = '<option value="">Error al cargar subcategorías</option>';
+            });
+    }
+    // Función para cargar atributos de subcategoría
+    function cargarAtributos(subcategoriaId) {
+        if (!subcategoriaId) {
+            document.getElementById('atributos-empty').style.display = 'block';
+            document.querySelector('.atributos-loaded').style.display = 'none';
+            return;
+        }
+        mostrarLoading(atributosContainer.querySelector('.card-body'));
+        fetch(`/api/subcategorias/${subcategoriaId}/atributos/`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error de red');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data.atributos || data.atributos.length === 0) {
+                    atributosContainer.querySelector('.card-body').innerHTML = `
+                        <div class="text-center text-info py-4">
+                            <i class="fas fa-info-circle fa-2x mb-2"></i>
+                            <p><strong>Sin atributos específicos</strong></p>
+                            <p class="mb-0">Esta subcategoría no tiene atributos específicos definidos</p>
+                        </div>
+                    `;
+                    return;
+                }
+                let atributosHTML = '';
+                data.atributos.forEach(atributo => {
+                    const valorExistente = document.querySelector(`input[name="atributo_${atributo.id}"]`)?.value || '';
+                    let inputHTML = '';
+                    switch(atributo.tipo) {
+                        case 'boolean':
+                            inputHTML = `
+                                <div class="form-check">
+                                    <input type="checkbox" 
+                                           id="atributo_${atributo.id}" 
+                                           name="atributo_${atributo.id}" 
+                                           class="form-check-input" 
+                                           value="true"
+                                           ${valorExistente === 'true' ? 'checked' : ''}
+                                           ${atributo.requerido ? 'required' : ''}>
+                                    <label class="form-check-label" for="atributo_${atributo.id}">
+                                        Activar ${atributo.nombre}
+                                    </label>
+                                </div>
+                            `;
+                            break;
+                        case 'lista':
+                            if (atributo.opciones && atributo.opciones.length > 0) {
+                                inputHTML = `
+                                    <select name="atributo_${atributo.id}" 
+                                            class="form-control" 
+                                            ${atributo.requerido ? 'required' : ''}>
+                                        <option value="">Selecciona una opción</option>
+                                        ${atributo.opciones.map(opcion => 
+                                            `<option value="${opcion}" ${valorExistente === opcion ? 'selected' : ''}>${opcion}</option>`
+                                        ).join('')}
+                                    </select>
+                                `;
+                            } else {
+                                inputHTML = `
+                                    <input type="text" 
+                                           name="atributo_${atributo.id}" 
+                                           class="form-control" 
+                                           value="${valorExistente}"
+                                           placeholder="Ingresa ${atributo.nombre.toLowerCase()}"
+                                           ${atributo.requerido ? 'required' : ''}>
+                                `;
+                            }
+                            break;
+                        case 'numero':
+                            inputHTML = `
+                                <input type="number" 
+                                       name="atributo_${atributo.id}" 
+                                       class="form-control" 
+                                       value="${valorExistente}"
+                                       step="0.01"
+                                       placeholder="Ingresa ${atributo.nombre.toLowerCase()}"
+                                       ${atributo.requerido ? 'required' : ''}>
+                            `;
+                            break;
+                        case 'fecha':
+                            inputHTML = `
+                                <input type="date" 
+                                       name="atributo_${atributo.id}" 
+                                       class="form-control" 
+                                       value="${valorExistente}"
+                                       ${atributo.requerido ? 'required' : ''}>
+                            `;
+                            break;
+                        default: // texto
+                            inputHTML = `
+                                <input type="text" 
+                                       name="atributo_${atributo.id}" 
+                                       class="form-control" 
+                                       value="${valorExistente}"
+                                       placeholder="Ingresa ${atributo.nombre.toLowerCase()}"
+                                       ${atributo.requerido ? 'required' : ''}>
+                            `;
+                    }
+                    atributosHTML += `
+                        <div class="form-group mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-tag"></i>
+                                ${atributo.nombre}${atributo.requerido ? ' *' : ''}
+                            </label>
+                            ${inputHTML}
+                        </div>
+                    `;
+                });
+                atributosContainer.querySelector('.card-body').innerHTML = atributosHTML;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                mostrarError(atributosContainer.querySelector('.card-body'), 'No se pudieron cargar los atributos específicos. Intenta recargar la página.');
+            });
+    }
+    // Cargar atributos si ya hay una categoría seleccionada (modo edición)
+    /*if (categoriaSelect.value) {
+        cargarAtributos(categoriaSelect.value);
+    }*/
+    // Validación del formulario antes de enviar
+    document.getElementById('productForm').addEventListener('submit', function(e) {
+        const precio = document.getElementById('id_precio').value;
+        const stock = document.getElementById('id_stock').value;
+        if (precio && parseFloat(precio) < 0) {
+            e.preventDefault();
+            alert('El precio no puede ser negativo');
+            return false;
+        }
+        if (stock && parseInt(stock) < 0) {
+            e.preventDefault();
+            alert('El stock no puede ser negativo');
+            return false;
+        }
+    });
+    // Animación de entrada
+    const formCard = document.querySelector('.card');
+    if (formCard) {
+        formCard.style.opacity = '0';
+        formCard.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            formCard.style.transition = 'all 0.5s ease';
+            formCard.style.opacity = '1';
+            formCard.style.transform = 'translateY(0)';
+        }, 100);
+    }
+});
+</script>
+{% endblock %}

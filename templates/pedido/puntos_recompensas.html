@@ -1,0 +1,68 @@
+{% extends "Principal/base.html" %}
+{% block content %}
+<div class="container py-4">
+  <h2 class="mb-4 text-center">Tus puntos y recompensas</h2>
+  <div class="alert alert-info text-center mb-4">
+    <strong>Saldo actual:</strong> {{ perfil.puntos }} puntos
+  </div>
+  <h5 class="mb-3">Historial de puntos ganados</h5>
+  <div class="table-container">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Código</th>
+          <th>Total</th>
+          <th>Puntos ganados</th>
+          <th>Detalle</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in pedidos_con_detalles %}
+        <tr>
+          <td>{{ p.pedido.fecha_hora|date:"d/m/Y H:i" }}</td>
+          <td>{{ p.pedido.codigo }}</td>
+          <td>${{ p.pedido.total }}</td>
+          <td>
+            <span class="badge badge-success">{{ p.pedido.puntos_ganados }}</span>
+          </td>
+          <td>
+            <button class="btn btn-link btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#detalle{{ p.pedido.id }}">
+              Ver detalle
+            </button>
+          </td>
+        </tr>
+        <tr class="collapse" id="detalle{{ p.pedido.id }}">
+          <td colspan="5">
+            <ul class="mb-1">
+              <li>
+                Puntos por monto gastado:
+                <strong>
+                  {{ p.pedido.total|floatformat:2 }} ({{ p.pedido.total|floatformat:0 }} // 30 x 5 pts)
+                </strong>
+              </li>
+              <li>
+                Puntos extra por productos:
+                <ul>
+                  {% for d in p.detalles %}
+                    {% if d.puntos_extra > 0 %}
+                      <li>
+                        {{ d.nombre }} x{{ d.cantidad }}: {{ d.puntos_extra }} pts
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              </li>
+            </ul>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center text-muted">Aún no tienes puntos acumulados.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

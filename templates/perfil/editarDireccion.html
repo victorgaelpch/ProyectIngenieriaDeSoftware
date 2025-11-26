@@ -1,0 +1,45 @@
+
+{% extends "Principal/base.html" %} 
+{% load static %} 
+{% block content %}
+<div class="container mt-5">
+  <div class="card" style="max-width: 600px; margin: 40px auto;">
+    <div class="card-body p-5">
+      <div class="text-center mb-5">
+        <h2 class="fw-bold mb-2">Editar dirección</h2>
+        <p class="lead text-secondary mb-0">
+          Modifica los datos de tu dirección de facturación.
+        </p>
+      </div>
+
+      <form method="post" class="text-start">
+        {% csrf_token %} 
+        {% for field in form %}
+        <div class="mb-4">
+          <label for="{{ field.id_for_label }}" class="form-label">
+            {{ field.label }}
+          </label>
+          {{ field }} 
+          {% if field.help_text %}
+          <div class="form-text text-muted">{{ field.help_text }}</div>
+          {% endif %} 
+          {% if field.errors %}
+          <div class="invalid-feedback d-block">
+            {% for error in field.errors %}
+            <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary w-100 py-3 fs-lg">
+          Guardar cambios
+        </button>
+        <a href="{% url 'editar_perfil' %}" class="btn btn-secondary mt-3 w-100 py-3 fs-lg">
+          Cancelar
+        </a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock content %}

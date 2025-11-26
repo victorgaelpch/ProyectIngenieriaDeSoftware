@@ -1,0 +1,67 @@
+<nav class="navbar">
+    <div class="container">
+        <a href="{% url 'administracion:panel' %}" class="navbar-brand">
+            <i class="fas fa-utensils"></i> Sistema Restaurante
+        </a>
+        <div class="navbar-menu">
+            {% if user.is_authenticated %}
+               
+                    <a href="{% url 'administracion:panel' %}" class="nav-link">
+                        <i class="fas fa-tachometer-alt"></i> Admin
+                    </a>
+                    <a href="{% url 'administracion:theme_customizer' %}" class="nav-link">
+                        <i class="fas fa-palette"></i> Temas
+                    </a>
+               
+                <a href="#" class="nav-link">
+                    <i class="fas fa-user"></i> {{ user.username }}
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<style>
+.navbar {
+    background: var(--primary-gradient);
+    padding: var(--spacing-md) 0;
+    box-shadow: var(--shadow-md);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-brand {
+    color: white;
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.navbar-menu {
+    display: flex;
+    gap: var(--spacing-lg);
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    transition: opacity var(--transition-base);
+}
+
+.nav-link:hover {
+    opacity: 0.8;
+}
+</style>

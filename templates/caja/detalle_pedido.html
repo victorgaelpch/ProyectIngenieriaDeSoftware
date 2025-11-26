@@ -1,0 +1,169 @@
+{% extends 'Principal/base.html' %}
+
+{% block title %}Detalle del Pedido {{ pedido.codigo }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="fas fa-file-invoice"></i> Pedido {{ pedido.codigo }}</h1>
+        <div>
+            <a href="{% url 'caja:imprimir_ticket' pedido.id %}" class="btn btn-secondary" target="_blank">
+                <i class="fas fa-print"></i> Imprimir
+            </a>
+            <a href="{% url 'caja:lista_pedidos_caja' %}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Información del pedido -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-info-circle"></i> Información del Pedido</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th>Estado:</th>
+                            <td>
+                                <span class="badge badge-{{ pedido.estado }}">
+                                    {{ pedido.get_estado_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Fecha:</th>
+                            <td>{{ pedido.fecha_hora|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Usuario:</th>
+                            <td>{{ pedido.usuario.username|default:"Anónimo" }}</td>
+                        </tr>
+                        {% if pedido.pickup %}
+                        <tr>
+                            <th>Tipo de pago:</th>
+                            <td>{{ pedido.pickup.tipo_pago|title }}</td>
+                        </tr>
+                        <tr>
+                            <th>Horario recolección:</th>
+                            <td>{{ pedido.pickup.horario_recoleccion|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <th>Sucursal:</th>
+                            <td>{{ pedido.sucursal.nombre_sucursal }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Resumen de puntos -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5><i class="fas fa-star"></i> Resumen de Puntos</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th>Puntos usados:</th>
+                            <td class="text-danger">-{{ pedido.puntos_usados }} pts</td>
+                        </tr>
+                        <tr>
+                            <th>Puntos por productos:</th>
+                            <td class="text-success">+{{ total_puntos_productos }} pts</td>
+                        </tr>
+                        <tr>
+                            <th>Puntos por compra:</th>
+                            <td class="text-success">+{{ puntos_por_compra }} pts</td>
+                        </tr>
+                        <tr class="border-top">
+                            <th>Total a otorgar:</th>
+                            <td class="text-success"><strong>{{ total_puntos }} pts</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Ya otorgados:</th>
+                            <td>{{ pedido.puntos_ganados|default:0 }} pts</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Productos del pedido -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5><i class="fas fa-shopping-cart"></i> Productos</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unit.</th>
+                            <th>Subtotal</th>
+                            <th>Puntos Extra</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in productos_detalle %}
+                            <tr>
+                                <td>{{ item.nombre }}</td>
+                                <td>{{ item.cantidad }}</td>
+                                <td>${{ item.precio_unitario|floatformat:2 }}</td>
+                                <td>${{ item.subtotal|floatformat:2 }}</td>
+                                <td class="text-success">{{ item.puntos_extra }} pts</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="table-secondary">
+                        <tr>
+                            <td colspan="3"><strong>Total:</strong></td>
+                            <td><strong>${{ pedido.total|floatformat:2 }}</strong></td>
+                            <td><strong class="text-success">{{ total_puntos_productos }} pts</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Cambiar estado -->
+    {% if pedido.estado not in 'recogido,cancelado' %}
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-exchange-alt"></i> Cambiar Estado del Pedido</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{% url 'caja:cambiar_estado_pedido' pedido.id %}">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <select name="nuevo_estado" class="form-control form-control-lg">
+                                <option value="">Seleccionar nuevo estado...</option>
+                                <option value="pendiente">Pendiente</option>
+                                <option value="preparando">Preparando</option>
+                                <option value="listo">Listo para recoger</option>
+                                <option value="pagado">Pagado</option>
+                                <option value="recogido">Recogido</option>
+                                <option value="cancelado">Cancelado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-success btn-lg w-100">
+                                <i class="fas fa-check"></i> Actualizar Estado
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

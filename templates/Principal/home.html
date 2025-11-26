@@ -1,0 +1,81 @@
+{% extends "Principal/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid p-0">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-8">
+        <div class="card">
+          <div class="card-header text-center">
+            <h1 class="m-0">¡Bienvenido ^-^!</h1>
+          </div>
+          <div class="card-body">
+            <div class="text-center mb-4">
+              <img src="{% static 'img/logo1.jpg' %}" alt="Logo" class="rounded-circle shadow" style="width: 80px; height: 80px; object-fit: cover;">
+            </div>
+
+            <p class="text-center mb-4">
+              Experimenta la mejor forma de realizar tus pedidos. 
+              <strong class="text-success">Ordena en línea, recoge sin esperas</strong> 
+              y disfruta de recompensas exclusivas.
+            </p>
+
+            <!-- Features -->
+            <div class="d-flex flex-wrap justify-content-center gap-3 mb-5">
+              <div class="d-flex flex-column align-items-center">
+                <i class="fas fa-clock text-muted fa-2x mb-2"></i>
+                <span class="text-muted">Sin esperas</span>
+              </div>
+              <div class="d-flex flex-column align-items-center">
+                <i class="fas fa-star text-muted fa-2x mb-2"></i>
+                <span class="text-muted">Puntos y recompensas</span>
+              </div>
+              <div class="d-flex flex-column align-items-center">
+                <i class="fas fa-mobile-alt text-muted fa-2x mb-2"></i>
+                <span class="text-muted">Fácil y rápido</span>
+              </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="d-flex flex-column gap-3">
+              <a href="{% url 'pickup_pedido' %}" class="btn btn-primary d-flex align-items-center justify-content-between">
+                <i class="bi bi-bag-plus"></i>
+                <div class="text-left">
+                  <div class="fw-semibold">Pedido Pickup</div>
+                  <small class="opacity-75">Recoge en sucursal</small>
+                </div>
+                <i class="fas fa-arrow-right"></i>
+              </a>
+              <a href="{% url 'kiosko_pedido' %}" class="btn btn-secondary d-flex align-items-center justify-content-between">
+                <i class="bi bi-tablet"></i>
+                <div class="text-left">
+                  <div class="fw-semibold">Pedido en Kiosko</div>
+                  <small class="opacity-75">Ordena aquí mismo</small>
+                </div>
+                <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
+          <div class="card p-3 text-center" style="flex: 1; min-width: 120px; max-width: 140px;">
+            <div class="text-bold text-primary fs-2">1K+</div>
+            <div class="text-muted fs-sm">Pedidos completados</div>
+          </div>
+          <div class="card p-3 text-center" style="flex: 1; min-width: 120px; max-width: 140px;">
+            <div class="text-bold text-success fs-2">4.9</div>
+            <div class="text-muted fs-sm">Calificación promedio</div>
+          </div>
+          <div class="card p-3 text-center" style="flex: 1; min-width: 120px; max-width: 140px;">
+            <div class="text-bold text-warning fs-2">5min</div>
+            <div class="text-muted fs-sm">Tiempo promedio</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

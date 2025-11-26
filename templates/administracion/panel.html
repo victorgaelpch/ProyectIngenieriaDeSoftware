@@ -1,0 +1,757 @@
+{% extends 'Principal/base.html' %}
+
+{% block title %}Panel de Administración{% endblock %}
+{% block extra_css%}
+<style>
+        .admin-container {
+        background: 0,0,0;
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    
+    .admin-header {
+        text-align: center;
+        color: black;
+        margin-bottom: 3rem;
+    }
+    
+    .admin-header h1 {
+        font-size: 3rem;
+        font-weight: 300;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .admin-header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+    
+    .modules-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .module-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .module-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    
+    .module-header {
+        padding: 2rem;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-bottom: 3px solid #667eea;
+        position: relative;
+    }
+    
+    .module-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+    }
+    
+    .module-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin: 0 0 0.5rem 0;
+    }
+    
+    .module-description {
+        color: #718096;
+        font-size: 0.95rem;
+        margin: 0;
+    }
+    
+    .module-body {
+        padding: 1.5rem 2rem;
+    }
+    
+    .module-stats {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+    }
+    
+    .stat-item {
+        text-align: center;
+        flex: 1;
+    }
+    
+    .stat-number {
+        display: block;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #667eea;
+    }
+    
+    .stat-label {
+        font-size: 0.8rem;
+        color: #718096;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .module-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .action-btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 10px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .action-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+    }
+    
+    .action-btn:hover::before {
+        left: 100%;
+    }
+    
+    .btn-primary-action {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .btn-primary-action:hover {
+        color: white;
+        transform: translateX(5px);
+        box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+    }
+    
+    .btn-secondary-action {
+        background: #f8f9fa;
+        color: #4a5568;
+        border: 2px solid #e2e8f0;
+    }
+    
+    .btn-secondary-action:hover {
+        background: #e2e8f0;
+        color: #2d3748;
+        transform: translateX(5px);
+    }
+    
+    .quick-stats {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .quick-stats h2 {
+        color: #2d3748;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .stat-card {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 1.5rem;
+        border-radius: 15px;
+        text-align: center;
+        border-left: 4px solid #667eea;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+    
+    .stat-card i {
+        font-size: 2rem;
+        color: #667eea;
+        margin-bottom: 0.5rem;
+    }
+    
+    .recent-activity {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .recent-activity h2 {
+        color: #2d3748;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .activity-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .activity-item {
+        padding: 1rem 0;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+    
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+    
+    .activity-success {
+        background: #c6f6d5;
+        color: #2f855a;
+    }
+    
+    .activity-info {
+        background: #bee3f8;
+        color: #2b6cb0;
+    }
+    
+    .activity-warning {
+        background: #ffd89a;
+        color: #c05621;
+    }
+    
+    .activity-content {
+        flex: 1;
+    }
+    
+    .activity-text {
+        color: #4a5568;
+        font-weight: 500;
+        margin: 0 0 0.25rem 0;
+    }
+    
+    .activity-time {
+        color: #718096;
+        font-size: 0.8rem;
+    }
+    
+    .floating-help {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 20px rgba(72,187,120,0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        transition: all 0.3s ease;
+        z-index: 1000;
+        cursor: pointer;
+    }
+    
+    .floating-help:hover {
+        transform: scale(1.1);
+        box-shadow: 0 8px 30px rgba(72,187,120,0.4);
+    }
+    
+    @media (max-width: 768px) {
+        .admin-header h1 {
+            font-size: 2rem;
+        }
+        
+        .modules-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        .module-header,
+        .module-body {
+            padding: 1.5rem;
+        }
+        
+        .floating-help {
+            bottom: 1rem;
+            right: 1rem;
+        }
+    }
+    
+    /* Animaciones */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .module-card {
+        animation: fadeInUp 0.6s ease forwards;
+    }
+    
+    .module-card:nth-child(1) { animation-delay: 0.1s; opacity: 0; }
+    .module-card:nth-child(2) { animation-delay: 0.2s; opacity: 0; }
+    .module-card:nth-child(3) { animation-delay: 0.3s; opacity: 0; }
+    .module-card:nth-child(4) { animation-delay: 0.4s; opacity: 0; }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="container">
+        <!-- Header del panel -->
+        <div class="admin-header">
+            <h1>
+                <i class="fas fa-tachometer-alt"></i>
+                Panel de Administración
+            </h1>
+            <p>Gestiona todos los aspectos de tu restaurante desde aquí</p>
+        </div>
+
+        <!-- Estadísticas rápidas -->
+        <div class="quick-stats">
+            <h2>
+                <i class="fas fa-chart-bar"></i>
+                Estadísticas Generales
+            </h2>
+            <div class="stats-row">
+                <div class="stat-card">
+                    <i class="fas fa-folder"></i>
+                    <span class="stat-number">{{ total_categorias|default:0 }}</span>
+                    <div class="stat-label">Categorías</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-folder-open"></i>
+                    <span class="stat-number">{{ total_subcategorias|default:0 }}</span>
+                    <div class="stat-label">Subcategorías</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-tags"></i>
+                    <span class="stat-number">{{ total_atributos|default:0 }}</span>
+                    <div class="stat-label">Atributos</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-box"></i>
+                    <span class="stat-number">{{ total_productos|default:0 }}</span>
+                    <div class="stat-label">Productos</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Módulos principales -->
+        <div class="modules-grid">
+            <!-- Gestión de Categorías -->
+            <div class="module-card">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    <h3 class="module-title">Gestión de Categorías</h3>
+                    <p class="module-description">Organiza y administra las categorías principales del menú</p>
+                </div>
+                <div class="module-body">
+                    <div class="module-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">{{ total_categorias|default:0 }}</span>
+                            <span class="stat-label">Total</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ categorias_activas|default:0 }}</span>
+                            <span class="stat-label">Activas</span>
+                        </div>
+                    </div>
+                    <div class="module-actions">
+                        <a href="{% url 'administracion:categoria_list' %}" class="action-btn btn-primary-action">
+                            <i class="fas fa-list"></i>
+                            Ver Todas las Categorías
+                        </a>
+                        <a href="{% url 'administracion:categoria_add' %}" class="action-btn btn-secondary-action">
+                            <i class="fas fa-plus"></i>
+                            Agregar Nueva Categoría
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gestión de Subcategorías -->
+            <div class="module-card">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                    <h3 class="module-title">Gestión de Subcategorías</h3>
+                    <p class="module-description">Administra las subcategorías para una mejor organización</p>
+                </div>
+                <div class="module-body">
+                    <div class="module-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">{{ total_subcategorias|default:0 }}</span>
+                            <span class="stat-label">Total</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ subcategorias_activas|default:0 }}</span>
+                            <span class="stat-label">Activas</span>
+                        </div>
+                    </div>
+                    <div class="module-actions">
+                        <a href="{% url 'administracion:subcategoria_list' %}" class="action-btn btn-primary-action">
+                            <i class="fas fa-list"></i>
+                            Ver Todas las Subcategorías
+                        </a>
+                        <a href="{% url 'administracion:subcategoria_add' %}" class="action-btn btn-secondary-action">
+                            <i class="fas fa-plus"></i>
+                            Agregar Nueva Subcategoría
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gestión de Atributos -->
+            <div class="module-card">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <h3 class="module-title">Gestión de Atributos</h3>
+                    <p class="module-description">Define características específicas para cada categoría</p>
+                </div>
+                <div class="module-body">
+                    <div class="module-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">{{ total_atributos|default:0 }}</span>
+                            <span class="stat-label">Total</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ atributos_requeridos|default:0 }}</span>
+                            <span class="stat-label">Requeridos</span>
+                        </div>
+                    </div>
+                    <div class="module-actions">
+                        <a href="{% url 'administracion:atributo_list' %}" class="action-btn btn-primary-action">
+                            <i class="fas fa-list"></i>
+                            Ver Todos los Atributos
+                        </a>
+                        <a href="{% url 'administracion:atributo_add' %}" class="action-btn btn-secondary-action">
+                            <i class="fas fa-plus"></i>
+                            Agregar Nuevo Atributo
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gestión de Productos -->
+            <div class="module-card">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <h3 class="module-title">Gestión de Productos</h3>
+                    <p class="module-description">Administra el catálogo completo de productos del menú</p>
+                </div>
+                <div class="module-body">
+                    <div class="module-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">{{ total_productos|default:0 }}</span>
+                            <span class="stat-label">Total</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ productos_activos|default:0 }}</span>
+                            <span class="stat-label">Activos</span>
+                        </div>
+                    </div>
+                    <div class="module-actions">
+                        <a href="{% url 'menu:producto_list' %}" class="action-btn btn-primary-action">
+                            <i class="fas fa-list"></i>
+                            Ver Todos los Productos
+                        </a>
+                        <a href="{% url 'menu:agregar_producto' %}" class="action-btn btn-secondary-action">
+                            <i class="fas fa-plus"></i>
+                            Agregar Nuevo Producto
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actividad reciente -->
+        <div class="recent-activity">
+            <h2>
+                <i class="fas fa-history"></i>
+                Actividad Reciente (DEMO)
+            </h2>
+            <ul class="activity-list">
+                <li class="activity-item">
+                    <div class="activity-icon activity-success">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="activity-content">
+                        <p class="activity-text">Sistema de administración iniciado correctamente</p>
+                        <span class="activity-time">Hace unos momentos</span>
+                    </div>
+                </li>
+                <li class="activity-item">
+                    <div class="activity-icon activity-info">
+                        <i class="fas fa-info"></i>
+                    </div>
+                    <div class="activity-content">
+                        <p class="activity-text">Base de datos Cassandra conectada</p>
+                        <span class="activity-time">Hace unos momentos</span>
+                    </div>
+                </li>
+                <li class="activity-item">
+                    <div class="activity-icon activity-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="activity-content">
+                        <p class="activity-text">Recuerda configurar las categorías antes de agregar productos</p>
+                        <span class="activity-time">Información del sistema</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Botón de ayuda flotante -->
+        <button class="floating-help" onclick="mostrarAyuda()" title="Ayuda">
+            <i class="fas fa-question"></i>
+        </button>
+    </div>
+</div>
+
+<!-- Modal de ayuda -->
+<div id="helpModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-question-circle"></i> Centro de Ayuda</h3>
+            <span class="close" onclick="cerrarAyuda()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <h4>Guía de Uso Rápido</h4>
+            <ul>
+                <li><strong>Paso 1:</strong> Crea las categorías principales (Ej: Bebidas, Comidas, Postres)</li>
+                <li><strong>Paso 2:</strong> Agrega subcategorías si es necesario (Ej: Bebidas Frías, Bebidas Calientes)</li>
+                <li><strong>Paso 3:</strong> Define atributos específicos para cada categoría (Ej: Tamaño, Temperatura)</li>
+                <li><strong>Paso 4:</strong> Agrega productos asignándolos a sus categorías correspondientes</li>
+            </ul>
+            
+            <h4>Consejos Importantes</h4>
+            <ul>
+                <li>Mantén una estructura lógica en tus categorías</li>
+                <li>Los atributos requeridos deben completarse al crear productos</li>
+                <li>Puedes editar cualquier elemento posteriormente</li>
+                <li>Los elementos inactivos no aparecerán en el menú público</li>
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="cerrarAyuda()">Entendido</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function mostrarAyuda() {
+    document.getElementById('helpModal').style.display = 'block';
+}
+
+function cerrarAyuda() {
+    document.getElementById('helpModal').style.display = 'none';
+}
+
+// Cerrar modal al hacer clic fuera
+window.onclick = function(event) {
+    const modal = document.getElementById('helpModal');
+    if (event.target == modal) {
+        cerrarAyuda();
+    }
+}
+
+// Animación de números
+/*
+document.addEventListener('DOMContentLoaded', function() {
+    const statNumbers = document.querySelectorAll('.stat-number');
+    
+    statNumbers.forEach(stat => {
+        const target = parseInt(stat.textContent);
+        let current = 0;
+        const increment = target / 50;
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                stat.textContent = target;
+                clearInterval(timer);
+            } else {
+                stat.textContent = Math.ceil(current);
+            }
+        }, 10);
+    });
+*/
+    // Efecto hover en las tarjetas
+    const moduleCards = document.querySelectorAll('.module-card');
+    moduleCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-10px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+
+
+// Modal styles for help
+const modalCSS = `
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+    
+    .modal-content {
+        background-color: white;
+        margin: 10% auto;
+        padding: 0;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 600px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    
+    .modal-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #edf2f7;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px 15px 0 0;
+    }
+    
+    .modal-body {
+        padding: 2rem;
+        line-height: 1.6;
+    }
+    
+    .modal-body h4 {
+        color: #2d3748;
+        margin: 1.5rem 0 1rem 0;
+        font-weight: 600;
+    }
+    
+    .modal-body ul {
+        margin-bottom: 1.5rem;
+    }
+    
+    .modal-body li {
+        margin-bottom: 0.5rem;
+        color: #4a5568;
+    }
+    
+    .modal-footer {
+        padding: 1.5rem;
+        border-top: 1px solid #edf2f7;
+        display: flex;
+        justify-content: flex-end;
+    }
+    
+    .close {
+        color: white;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        opacity: 0.8;
+    }
+    
+    .close:hover {
+        opacity: 1;
+    }
+    
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+    }
+`;
+
+// Agregar estilos del modal
+const styleSheet = document.createElement('style');
+styleSheet.textContent = modalCSS;
+document.head.appendChild(styleSheet);
+</script>
+{% endblock %}

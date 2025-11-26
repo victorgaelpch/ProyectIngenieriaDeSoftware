@@ -1,0 +1,41 @@
+{% extends 'Principal/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="row g-0">
+            <div class="col-md-4">
+                {% if producto.imagen %}
+                    <img src="{{ producto.imagen }}" class="card-img" alt="{{ producto.nombre }}">
+                {% endif %}
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h2 class="card-title">{{ producto.nombre }}</h2>
+                    <p class="card-text">{{ producto.descripcion }}</p>
+                    <p class="card-text"><strong>Precio: </strong>${{ producto.precio }}</p>
+                    
+                    <!-- Atributos dinámicos -->
+                    <div class="mt-4">
+                        <h4>Características</h4>
+                        <dl class="row">
+                            {% for atributo in atributos %}
+                            <dt class="col-sm-3">{{ atributo.nombre }}</dt>
+                            <dd class="col-sm-9">{{ atributo.valor }}</dd>
+                            {% endfor %}
+                        </dl>
+                    </div>
+
+                    {% if user.is_staff %}
+                    <div class="mt-3">
+                        <a href="{% url 'menu:producto_edit' producto.id %}" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
